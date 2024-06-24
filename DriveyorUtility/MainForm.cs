@@ -74,6 +74,9 @@ namespace DriveyorUtility
         private List<string> receivedDataList = new List<string>();
         private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters)>();
         private CommandType currentCommand = CommandType.None;
+        private bool isButtonClickProcessed = false;
+        
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             comB_COM_Port.Items.AddRange(COM_Port_Detected);
@@ -88,15 +91,15 @@ namespace DriveyorUtility
                 if (result == DialogResult.Yes)
                 {
                     // Change all card parameters
-                    CfmParamChange.Click -= FunctionY;
-                    CfmParamChange.Click += FunctionX;//function x called when changing all params
+                    CfmParamChange.Click -= EditOneCardParam;
+                    CfmParamChange.Click += EditAllParam;//function x called when changing all params
 
                 }
                 else
                 {
                     // Change specific card parameters
-                    CfmParamChange.Click -= FunctionX;
-                    CfmParamChange.Click += FunctionY;//function y called when changing all params
+                    CfmParamChange.Click -= EditAllParam; 
+                    CfmParamChange.Click += EditOneCardParam;//function y called when changing all params
 
                 }
             }
@@ -607,7 +610,7 @@ namespace DriveyorUtility
                     g.DrawString($"Pallet Length: {conveyorParams.PalletLength}", font, brush, new PointF(10, y));
                     g.DrawString($"Stop Position: {conveyorParams.StopPosition}", font, brush, new PointF(10, y + lineHeight));
                     g.DrawString($"Gap Size: {conveyorParams.GapSize}", font, brush, new PointF(10, y + lineHeight * 2));
-                    g.DrawString($"Travel Size: {conveyorParams.TravelSize}", font, brush, new PointF(10, y + lineHeight * 3));
+                    g.DrawString($"Over/Under Travel Size: {conveyorParams.TravelSize}", font, brush, new PointF(10, y + lineHeight * 3));
                     g.DrawString($"Timeout Steps: {conveyorParams.TimeoutSteps}", font, brush, new PointF(10, y + lineHeight * 4));
                     g.DrawString($"Direction: {conveyorParams.Direction}", font, brush, new PointF(10, y + lineHeight * 5));
                     g.DrawString($"Double Sided: {conveyorParams.DoubleSided}", font, brush, new PointF(10, y + lineHeight * 6));
@@ -626,7 +629,7 @@ namespace DriveyorUtility
                     g.DrawString($"Motor Hold Current: {motorParams.MD}", font, brush, new PointF(10, y + lineHeight));
                     g.DrawString($"Motor Microstepping Size: {motorParams.MI}", font, brush, new PointF(10, y + lineHeight * 2));
                     g.DrawString($"Motor Run Speed: {motorParams.MR}", font, brush, new PointF(10, y + lineHeight * 3));
-                    g.DrawString($"Over/under travel speed: {motorParams.MJ}", font, brush, new PointF(10, y + lineHeight * 4));
+                    g.DrawString($"Over/Under Travel Speed: {motorParams.MJ}", font, brush, new PointF(10, y + lineHeight * 4));
                     g.DrawString($"Motor Acceleration: {motorParams.MA}", font, brush, new PointF(10, y + lineHeight * 5));
                     g.DrawString($"Motor Direction: {motorParams.MB}", font, brush, new PointF(10, y + lineHeight * 6));
                     g.DrawString($"Motor Speed Profile: {motorParams.MF}", font, brush, new PointF(10, y + lineHeight * 7));
@@ -772,64 +775,141 @@ namespace DriveyorUtility
                 cbBoxAddrID.Items.Add(id);
             }
         }
-        private void FunctionX(object sender, EventArgs e)
+        private void EditAllParam(object sender, EventArgs e)
         {
-            // Implement the logic for Function X
-            //take all textbox n combobox reading
-            //0000{cmd}{val from txt/cmbbox}
-            //
-            MessageBox.Show("Change All Param Settings");
+            if (!isButtonClickProcessed)
+            {
+                isButtonClickProcessed = true;
+                CfmParamChange.Enabled = false;
+                confirmButtonTimer.Start();
+                if (cbBoxAddrID.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    isButtonClickProcessed = false;
+                    CfmParamChange.Enabled = true;
+                    confirmButtonTimer.Stop();
+                    return;
+                }
+                string[] commands = new string[]
+                {
+                    $"0000$cl{txtPalletLen.Text}\r\n",
+                    $"0000$cp{txtStopPos.Text}\r\n",
+                    $"0000$cg{txtGapSize.Text}\r\n",
+                    $"0000$cv{txtTravelSteps.Text}\r\n",
+                    $"0000$ct{AutoCalcTimeout()}\r\n",
+                    $"0000$cd{CmbBoxDir.SelectedIndex}\r\n",
+                    $"0000$cs{CmbBoxDbSide.SelectedIndex}\r\n",
+                    $"0000$cx{CmbBoxTravCorr.SelectedIndex}\r\n",
+                    $"0000$mc{txtMotorCurrent.Text}\r\n",
+                    $"0000$mr{txtMotorSpeed.Text}\r\n",
+                    $"0000$mj{txtTravelSpeed.Text}\r\n",
+                    $"0000$ma{AutoCalcAccel()}\r\n"
+                };
+
+                foreach (string command in commands)
+                {
+                    byte[] bytetosend = Encoding.ASCII.GetBytes(command).Concat(new byte[] { 0x06 }).ToArray();
+                    Debug.WriteLine($"Sending command: {command}");
+                    SendCommands(bytetosend);
+                    Thread.Sleep(1000); // Add a 500 milliseconds delay between commands
+                }
+
+                MessageBox.Show("All card parameters changed.");
+                Rf();
+            }
         }
 
-        private void FunctionY(object sender, EventArgs e)
+        private void EditOneCardParam(object sender, EventArgs e)
         {
-            // Implement the logic for Function Y
-            MessageBox.Show("Change individual card setting.");
+            if (!isButtonClickProcessed)
+            {
+                isButtonClickProcessed = true;
+                CfmParamChange.Enabled = false;
+                confirmButtonTimer.Start();
+                if (cbBoxAddrID.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    isButtonClickProcessed = false;
+                    CfmParamChange.Enabled = true;
+                    confirmButtonTimer.Stop();
+                    return;
+                }
+                string selectedID = cbBoxAddrID.SelectedItem.ToString();
+
+                string[] commands = new string[]
+                {
+                    $"{selectedID}$cl{txtPalletLen.Text}\r\n",
+                    $"{selectedID}$cp{txtStopPos.Text}\r\n",
+                    $"{selectedID}$cg{txtGapSize.Text}\r\n",
+                    $"{selectedID}$cv{txtTravelSteps.Text}\r\n",
+                    $"{selectedID}$ct{AutoCalcTimeout()}\r\n",
+                    $"{selectedID}$cd{CmbBoxDir.SelectedIndex}\r\n",
+                    $"{selectedID}$cs{CmbBoxDbSide.SelectedIndex}\r\n",
+                    $"{selectedID}$cx{CmbBoxTravCorr.SelectedIndex}\r\n",
+                    $"{selectedID}$mc{txtMotorCurrent.Text}\r\n",
+                    $"{selectedID}$mr{txtMotorSpeed.Text}\r\n",
+                    $"{selectedID}$mj{txtTravelSpeed.Text}\r\n",
+                    $"{selectedID}$ma{AutoCalcAccel()}\r\n"
+                };
+
+                foreach (string command in commands)
+                {
+                    byte[] bytetosend = Encoding.ASCII.GetBytes(command).Concat(new byte[] { 0x06 }).ToArray();
+                    Debug.WriteLine($"Sending command: {command}");
+                    SendCommands(bytetosend);
+                    Thread.Sleep(1000); // Add a 2000 milliseconds delay between commands
+                }
+
+                MessageBox.Show($"Parameters for card {selectedID} changed.");
+                Rf();
+            }
         }
 
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedID = cbBoxAddrID.SelectedItem.ToString();
+        CfmParamChange.Enabled = false;
+        confirmButtonTimer.Start();
+        string selectedID = cbBoxAddrID.SelectedItem.ToString();
 
-            // Check if the dictionary contains the selected ID
-            if (cardParameters.ContainsKey(selectedID))
-            {
-                // Retrieve the parameters from the dictionary
-                var parameters = cardParameters[selectedID];
-                var conveyorParams = parameters.conveyorParams;
-                var motorParams = parameters.motorParams;
+        // Check if the dictionary contains the selected ID
+        if (cardParameters.ContainsKey(selectedID))
+        {
+            // Retrieve the parameters from the dictionary
+            var parameters = cardParameters[selectedID];
+            var conveyorParams = parameters.conveyorParams;
+            var motorParams = parameters.motorParams;
 
-                // Update the Conveyor Card Settings text fields
-                txtPalletLen.Text = conveyorParams.PalletLength.ToString();
-                txtStopPos.Text = conveyorParams.StopPosition.ToString();
-                txtGapSize.Text = conveyorParams.GapSize.ToString();
-                txtTravelSteps.Text = conveyorParams.TravelSize.ToString();
+            // Update the Conveyor Card Settings text fields
+            txtPalletLen.Text = conveyorParams.PalletLength.ToString();
+            txtStopPos.Text = conveyorParams.StopPosition.ToString();
+            txtGapSize.Text = conveyorParams.GapSize.ToString();
+            txtTravelSteps.Text = conveyorParams.TravelSize.ToString();
 
-                // Update the ComboBox selections
-                SetComboBoxSelectedValue(CmbBoxDir, conveyorParams.Direction);
-                SetComboBoxSelectedValue(CmbBoxDbSide, conveyorParams.DoubleSided);
-                SetComboBoxSelectedValue(CmbBoxTravCorr, conveyorParams.TravelCorrection);
+            // Update the ComboBox selections
+            SetComboBoxSelectedValue(CmbBoxDir, conveyorParams.Direction);
+            SetComboBoxSelectedValue(CmbBoxDbSide, conveyorParams.DoubleSided);
+            SetComboBoxSelectedValue(CmbBoxTravCorr, conveyorParams.TravelCorrection);
 
-                // Update the Motor Card Settings text fields
-                txtMotorCurrent.Text = motorParams.MC.ToString();
-                txtMotorSpeed.Text = motorParams.MR.ToString();
-                txtTravelSpeed.Text = motorParams.MJ.ToString();
-            }
-            else
-            {
-                // Clear the text fields if the selected ID is not found
-                txtPalletLen.Clear();
-                txtStopPos.Clear();
-                txtGapSize.Clear();
-                txtTravelSteps.Clear();
-                CmbBoxDir.SelectedIndex = -1;
-                CmbBoxDbSide.SelectedIndex = -1;
-                CmbBoxTravCorr.SelectedIndex = -1;
-                txtMotorCurrent.Clear();
-                txtMotorSpeed.Clear();
-                txtTravelSpeed.Clear();
-            }
+            // Update the Motor Card Settings text fields
+            txtMotorCurrent.Text = motorParams.MC.ToString();
+            txtMotorSpeed.Text = motorParams.MR.ToString();
+            txtTravelSpeed.Text = motorParams.MJ.ToString();
         }
+        else
+        {
+            // Clear the text fields if the selected ID is not found
+            txtPalletLen.Clear();
+            txtStopPos.Clear();
+            txtGapSize.Clear();
+            txtTravelSteps.Clear();
+            CmbBoxDir.SelectedIndex = -1;
+            CmbBoxDbSide.SelectedIndex = -1;
+            CmbBoxTravCorr.SelectedIndex = -1;
+            txtMotorCurrent.Clear();
+            txtMotorSpeed.Clear();
+            txtTravelSpeed.Clear();
+        }
+    }
 
         private void SetComboBoxSelectedValue(ComboBox comboBox, int value)
         {
@@ -844,17 +924,55 @@ namespace DriveyorUtility
             comboBox.SelectedIndex = -1; // If the value is not found, clear the selection
         }
         //method to calculate Timeout derived from {pallet len x4} automatically
-        private void AutoCalcTimeout()
+        private int AutoCalcTimeout()
         {
+            // Get the pallet length from the text box
+            if (int.TryParse(txtPalletLen.Text, out int palletLength))
+            {
+                // Calculate the timeout value
+                int timeout = palletLength * 4;
 
+                // Return the calculated timeout value
+                return timeout;
+            }
+            else
+            {
+                // Handle the case where the pallet length is not a valid number
+                MessageBox.Show("Invalid Pallet Length", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return 0; // Return a default value or handle this case appropriately
+            }
         }
+
         //method to calculate Motor Acceleration derrived from Motor Speed
-        private void AutoCalcAccel()
+        private int AutoCalcAccel()
         {
+            if (double.TryParse(txtMotorSpeed.Text, out double p) && double.TryParse(txtStopPos.Text, out double s))
+            {
+                // Calculate the minimum acceleration using the given formula
+                double minAccel = (3 * Math.PI / 4) * (Math.Pow(p, 2) / s);
 
+                // Round up to the next whole number
+                int roundedMinAccel = (int)Math.Ceiling(minAccel);
+
+                // Display or use the rounded value as needed
+                Console.WriteLine($"Minimum Acceleration: {roundedMinAccel}");
+
+                // Return the rounded value
+                return roundedMinAccel;
+            }
+            else
+            {
+                MessageBox.Show("Invalid Motor Speed or Stop Position input.");
+                return -1; // Return a default or error value
+            }
         }
 
-        
+        private void confirmButtonTimer_Tick(object sender, EventArgs e)
+        {
+            isButtonClickProcessed = false;
+            CfmParamChange.Enabled = true;
+            confirmButtonTimer.Stop();
+        }
     }
 }
 

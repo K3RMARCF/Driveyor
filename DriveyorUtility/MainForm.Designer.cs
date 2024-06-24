@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
             this.Refresh = new System.Windows.Forms.Button();
@@ -82,6 +83,7 @@
             this.panel11 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
+            this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -297,12 +299,12 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(27, 188);
+            this.label4.Location = new System.Drawing.Point(30, 168);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(164, 30);
+            this.label4.Size = new System.Drawing.Size(164, 60);
             this.label4.TabIndex = 42;
-            this.label4.Text = "Travel Speed:";
+            this.label4.Text = "Over/Under\r\nTravel Speed:";
             // 
             // label10
             // 
@@ -462,12 +464,12 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(15, 250);
+            this.label7.Location = new System.Drawing.Point(12, 231);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(153, 30);
+            this.label7.Size = new System.Drawing.Size(153, 60);
             this.label7.TabIndex = 31;
-            this.label7.Text = "Travel Steps:";
+            this.label7.Text = "Over/Under\r\nTravel Steps:";
             // 
             // label2
             // 
@@ -639,7 +641,7 @@
             this.btnAll_Blink.Name = "btnAll_Blink";
             this.btnAll_Blink.Size = new System.Drawing.Size(256, 84);
             this.btnAll_Blink.TabIndex = 32;
-            this.btnAll_Blink.Text = "Test All";
+            this.btnAll_Blink.Text = "Identify All Card";
             this.btnAll_Blink.UseVisualStyleBackColor = true;
             this.btnAll_Blink.Click += new System.EventHandler(this.btnAll_Blink_Click);
             // 
@@ -649,12 +651,12 @@
             this.btnAll_StopBlink.AutoSize = true;
             this.btnAll_StopBlink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAll_StopBlink.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAll_StopBlink.Location = new System.Drawing.Point(18, 165);
+            this.btnAll_StopBlink.Location = new System.Drawing.Point(20, 163);
             this.btnAll_StopBlink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_StopBlink.Name = "btnAll_StopBlink";
-            this.btnAll_StopBlink.Size = new System.Drawing.Size(256, 84);
+            this.btnAll_StopBlink.Size = new System.Drawing.Size(260, 90);
             this.btnAll_StopBlink.TabIndex = 33;
-            this.btnAll_StopBlink.Text = "Stop Test All";
+            this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Card";
             this.btnAll_StopBlink.UseVisualStyleBackColor = true;
             this.btnAll_StopBlink.Click += new System.EventHandler(this.btnAll_StopBlink_Click);
             // 
@@ -668,7 +670,7 @@
             this.IdtIDLed.Name = "IdtIDLed";
             this.IdtIDLed.Size = new System.Drawing.Size(256, 84);
             this.IdtIDLed.TabIndex = 34;
-            this.IdtIDLed.Text = "Select Card";
+            this.IdtIDLed.Text = "Identify Specific Card";
             this.IdtIDLed.UseVisualStyleBackColor = true;
             this.IdtIDLed.Click += new System.EventHandler(this.IdtIDLed_Click);
             // 
@@ -740,6 +742,11 @@
             this.label12.Size = new System.Drawing.Size(170, 23);
             this.label12.TabIndex = 0;
             this.label12.Text = "Information Display";
+            // 
+            // confirmButtonTimer
+            // 
+            this.confirmButtonTimer.Interval = 5000;
+            this.confirmButtonTimer.Tick += new System.EventHandler(this.confirmButtonTimer_Tick);
             // 
             // MainForm
             // 
@@ -836,6 +843,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Panel panel12;
+        private System.Windows.Forms.Timer confirmButtonTimer;
     }
 }
 
