@@ -149,16 +149,32 @@ namespace DriveyorUtility
             {
                 // Clear all current data
                 ClearAllData();
-
+                ClearComboBox();
+                ClearTextFields();
                 SendLACommand();
 
             }
-
         }
+        private void ClearComboBox()
+        {
+            cbBoxAddrID.Items.Clear();
+            cbBoxAddrID.Text = string.Empty; // Optionally clear the selected text
+        }
+        private bool CheckSerialPortConnection()
+        {
+            if (sp == null)
+            {
+                MessageBox.Show("Please connect to a port");
+                return false;
+            }
+            return true;
+        }
+
         private void Rf()
         {
             ClearAllData();
-
+            ClearComboBox();
+            ClearTextFields();
             SendLACommand();
         }
         private void ClearAllData()
@@ -169,7 +185,20 @@ namespace DriveyorUtility
             panel12.Invalidate(); // Trigger repaint to clear the display
             System.Diagnostics.Debug.WriteLine("All data cleared.");
         }
-
+        private void ClearTextFields()
+        {
+            // Clear all the text fields and combo boxes
+            txtPalletLen.Clear();
+            txtStopPos.Clear();
+            txtGapSize.Clear();
+            txtTravelSteps.Clear();
+            CmbBoxDir.SelectedIndex = -1;
+            CmbBoxDbSide.SelectedIndex = -1;
+            CmbBoxTravCorr.SelectedIndex = -1;
+            txtMotorCurrent.Clear();
+            txtMotorSpeed.Clear();
+            txtTravelSpeed.Clear();
+        }
         private void SendLACommand()
         {
 
@@ -535,6 +564,8 @@ namespace DriveyorUtility
         //Identify tab functions
         private void btnAll_Blink_Click(object sender, EventArgs e)
         {
+            if (!CheckSerialPortConnection())
+                return;
             // cmd = "0000$si";
             byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x69, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosend, 0, bytetosend.Length);
@@ -542,12 +573,16 @@ namespace DriveyorUtility
         }
         private void btnAll_StopBlink_Click(object sender, EventArgs e)
         {
+            if (!CheckSerialPortConnection())
+                return;
             // cmd = "0000$sj";
             byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x6A, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosend, 0, bytetosend.Length);
         }
         private void IdtIDLed_Click(object sender, EventArgs e)
         {
+            if (!CheckSerialPortConnection())
+                return;
             ClearData();
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter the address ID:", "Input Address ID", "0000");
             //message box for user to put in addr ID
@@ -565,16 +600,19 @@ namespace DriveyorUtility
         }
         private void ConvParam_Click(object sender, EventArgs e)
         {
-            if (sp == null)
+            if (!CheckSerialPortConnection())
                 return;
 
             ClearData();
+
             currentCommand = CommandType.LA; // Set the current command to LA
 
             // Send the LA command
             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosendla, 0, bytetosendla.Length);
+            System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
+
         private void SendLMCommand()
         {
             byte[] bytetosendlm = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x6D, 0x0D, 0x0A, 0x06 };
@@ -656,6 +694,8 @@ namespace DriveyorUtility
         //Set Address Functions
         private void SpecAddr_Click(object sender, EventArgs e)
         {
+            if (!CheckSerialPortConnection())
+                return;
             // Get user input in messagebox, convert to hex then do the rest of the operation...
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter address ID:", "Input New Address ID", "0000");
             if (!string.IsNullOrEmpty(userInput))
@@ -707,6 +747,8 @@ namespace DriveyorUtility
         }
         private void EditSpecAddrID_Click(object sender, EventArgs e)
         {
+            if (!CheckSerialPortConnection())
+                return;
             // Prompt the user for the current address ID
             string currentAddress = Microsoft.VisualBasic.Interaction.InputBox("Enter the current address ID:", "Input Current Address ID", "0000");
             if (string.IsNullOrEmpty(currentAddress))
@@ -867,49 +909,65 @@ namespace DriveyorUtility
 
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
         {
-        CfmParamChange.Enabled = false;
-        confirmButtonTimer.Start();
-        string selectedID = cbBoxAddrID.SelectedItem.ToString();
+            try
+            {
+                CfmParamChange.Enabled = false;
+                confirmButtonTimer.Start();
 
-        // Check if the dictionary contains the selected ID
-        if (cardParameters.ContainsKey(selectedID))
-        {
-            // Retrieve the parameters from the dictionary
-            var parameters = cardParameters[selectedID];
-            var conveyorParams = parameters.conveyorParams;
-            var motorParams = parameters.motorParams;
+                // Check if an item is selected in the ComboBox
+                if (cbBoxAddrID.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-            // Update the Conveyor Card Settings text fields
-            txtPalletLen.Text = conveyorParams.PalletLength.ToString();
-            txtStopPos.Text = conveyorParams.StopPosition.ToString();
-            txtGapSize.Text = conveyorParams.GapSize.ToString();
-            txtTravelSteps.Text = conveyorParams.TravelSize.ToString();
+                string selectedID = cbBoxAddrID.SelectedItem.ToString();
 
-            // Update the ComboBox selections
-            SetComboBoxSelectedValue(CmbBoxDir, conveyorParams.Direction);
-            SetComboBoxSelectedValue(CmbBoxDbSide, conveyorParams.DoubleSided);
-            SetComboBoxSelectedValue(CmbBoxTravCorr, conveyorParams.TravelCorrection);
+                // Check if the dictionary contains the selected ID
+                if (cardParameters.ContainsKey(selectedID))
+                {
+                    // Retrieve the parameters from the dictionary
+                    var parameters = cardParameters[selectedID];
+                    var conveyorParams = parameters.conveyorParams;
+                    var motorParams = parameters.motorParams;
 
-            // Update the Motor Card Settings text fields
-            txtMotorCurrent.Text = motorParams.MC.ToString();
-            txtMotorSpeed.Text = motorParams.MR.ToString();
-            txtTravelSpeed.Text = motorParams.MJ.ToString();
+                    // Update the Conveyor Card Settings text fields
+                    txtPalletLen.Text = conveyorParams.PalletLength.ToString();
+                    txtStopPos.Text = conveyorParams.StopPosition.ToString();
+                    txtGapSize.Text = conveyorParams.GapSize.ToString();
+                    txtTravelSteps.Text = conveyorParams.TravelSize.ToString();
+
+                    // Update the ComboBox selections
+                    SetComboBoxSelectedValue(CmbBoxDir, conveyorParams.Direction);
+                    SetComboBoxSelectedValue(CmbBoxDbSide, conveyorParams.DoubleSided);
+                    SetComboBoxSelectedValue(CmbBoxTravCorr, conveyorParams.TravelCorrection);
+
+                    // Update the Motor Card Settings text fields
+                    txtMotorCurrent.Text = motorParams.MC.ToString();
+                    txtMotorSpeed.Text = motorParams.MR.ToString();
+                    txtTravelSpeed.Text = motorParams.MJ.ToString();
+                }
+                else
+                {
+                    // Clear the text fields if the selected ID is not found
+                    txtPalletLen.Clear();
+                    txtStopPos.Clear();
+                    txtGapSize.Clear();
+                    txtTravelSteps.Clear();
+                    CmbBoxDir.SelectedIndex = -1;
+                    CmbBoxDbSide.SelectedIndex = -1;
+                    CmbBoxTravCorr.SelectedIndex = -1;
+                    txtMotorCurrent.Clear();
+                    txtMotorSpeed.Clear();
+                    txtTravelSpeed.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Debug.WriteLine($"Exception: {ex}");
+            }
         }
-        else
-        {
-            // Clear the text fields if the selected ID is not found
-            txtPalletLen.Clear();
-            txtStopPos.Clear();
-            txtGapSize.Clear();
-            txtTravelSteps.Clear();
-            CmbBoxDir.SelectedIndex = -1;
-            CmbBoxDbSide.SelectedIndex = -1;
-            CmbBoxTravCorr.SelectedIndex = -1;
-            txtMotorCurrent.Clear();
-            txtMotorSpeed.Clear();
-            txtTravelSpeed.Clear();
-        }
-    }
 
         private void SetComboBoxSelectedValue(ComboBox comboBox, int value)
         {
@@ -951,6 +1009,9 @@ namespace DriveyorUtility
                 // Calculate the minimum acceleration using the given formula
                 double minAccel = (3 * Math.PI / 4) * (Math.Pow(p, 2) / s);
 
+                // Add a small value to ensure rounding up
+                minAccel += 0.5;
+
                 // Round up to the next whole number
                 int roundedMinAccel = (int)Math.Ceiling(minAccel);
 
@@ -966,6 +1027,8 @@ namespace DriveyorUtility
                 return -1; // Return a default or error value
             }
         }
+
+
 
         private void confirmButtonTimer_Tick(object sender, EventArgs e)
         {
