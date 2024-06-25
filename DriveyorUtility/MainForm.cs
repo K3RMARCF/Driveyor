@@ -107,10 +107,13 @@ namespace DriveyorUtility
         private void btnConnect_Click(object sender, EventArgs e)
         {
             cv_ComPort = comB_COM_Port.Text;
-            if (sp == null)
+
+            // If the serial port is not initialized or is closed, then connect
+            if (sp == null || !sp.IsOpen)
             {
                 try
                 {
+                    // Initialize the serial port
                     sp = new SerialPort(cv_ComPort, 115200, Parity.None, 8, StopBits.One);
                     sp.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                     sp.Open();
@@ -119,17 +122,29 @@ namespace DriveyorUtility
                     lblMsg2.Text = "Connection Success";
                     btnConnect.Text = "Disconnect";
                 }
-                catch
+                catch (Exception ex)
                 {
-                    lblMsg2.Text = "Connection Error";
+                    lblMsg2.Text = "Connection Error: " + ex.Message;
                 }
             }
             else
             {
-                btnConnect.Text = "Connect";
-                sp.Close();
+                // If the serial port is open, then disconnect
+                try
+                {
+                    sp.Close();
+                    sp.Dispose();
+                    sp = null;
+                    lblMsg2.Text = "Disconnected";
+                    btnConnect.Text = "Connect";
+                }
+                catch (Exception ex)
+                {
+                    lblMsg2.Text = "Error during disconnection: " + ex.Message;
+                }
             }
         }
+
         //-------------------------------------------------------------------------------
         //General functions
         private Dictionary<string, string> ReadDisplayParameters()
@@ -184,6 +199,7 @@ namespace DriveyorUtility
         private void Refresh_Click(object sender, EventArgs e)
         {
             {
+                CheckSerialPortConnection();
                 // Clear all current data
                 ClearAllData();
                 ClearComboBox();
@@ -208,6 +224,7 @@ namespace DriveyorUtility
 
         private void Rf()
         {
+            CheckSerialPortConnection();
             ClearAllData();
             ClearComboBox();
             ClearTextFields();
