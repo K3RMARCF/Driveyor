@@ -75,8 +75,6 @@ namespace DriveyorUtility
         private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters)>();
         private CommandType currentCommand = CommandType.None;
         private bool isButtonClickProcessed = false;
-        
-
         private void MainForm_Load(object sender, EventArgs e)
         {
             comB_COM_Port.Items.AddRange(COM_Port_Detected);
@@ -91,15 +89,15 @@ namespace DriveyorUtility
                 if (result == DialogResult.Yes)
                 {
                     // Change all card parameters
-                    CfmParamChange.Click -= EditOneCardParam;
-                    CfmParamChange.Click += EditAllParam;//function x called when changing all params
+                    CfmParamChange.Click -= EditOneCardParam;//unsub to this method
+                    CfmParamChange.Click += EditAllParam;//sub to this method
 
                 }
                 else
                 {
                     // Change specific card parameters
-                    CfmParamChange.Click -= EditAllParam; 
-                    CfmParamChange.Click += EditOneCardParam;//function y called when changing all params
+                    CfmParamChange.Click -= EditAllParam; //unsub to this method
+                    CfmParamChange.Click += EditOneCardParam;//sub to this method
 
                 }
             }
@@ -132,6 +130,43 @@ namespace DriveyorUtility
         }
         //-------------------------------------------------------------------------------
         //General functions
+        private Dictionary<string, string> ReadDisplayParameters()
+        {
+            var displayParameters = new Dictionary<string, string>();
+
+            // Get the application's base directory
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string filePath = Path.Combine(baseDirectory, "Display.txt");
+
+            try
+            {
+                string[] lines = File.ReadAllLines(filePath);
+                foreach (string line in lines)
+                {
+                    if (line.StartsWith("#")) // Skip comments
+                    {
+                        continue;
+                    }
+
+                    if (line.Contains(":"))
+                    {
+                        var parts = line.Split(new[] { ':' }, 2);
+                        if (parts.Length == 2)
+                        {
+                            var key = parts[0].Trim();
+                            var value = parts[1].Trim();
+                            displayParameters[key] = value;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error reading display parameters: {ex.Message}");
+            }
+
+            return displayParameters;
+        }
         private void SendCommands(byte[] command)
         {
             if (sp != null && sp.IsOpen)
@@ -152,7 +187,6 @@ namespace DriveyorUtility
                 ClearComboBox();
                 ClearTextFields();
                 SendLACommand();
-
             }
         }
         private void ClearComboBox()
@@ -306,7 +340,6 @@ namespace DriveyorUtility
                 {
                     Thread.Sleep(5000); // delay to let LA command finish reading all cards
                     currentCommand = CommandType.LM; // Move to the next command
-
                     SendLMCommand(); // Send the LM command
                 }
                 else if (currentCommand == CommandType.LM)
@@ -354,9 +387,7 @@ namespace DriveyorUtility
             {
                 ConveyorParameters parameters = new ConveyorParameters();
                 string[] lines = message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-
                 System.Diagnostics.Debug.WriteLine("Extracting Conveyor Parameters:");
-
                 foreach (string line in lines)
                 {
                     System.Diagnostics.Debug.WriteLine($"Processing line: {line}");
@@ -604,26 +635,23 @@ namespace DriveyorUtility
                 return;
 
             ClearData();
-
             currentCommand = CommandType.LA; // Set the current command to LA
-
             // Send the LA command
             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosendla, 0, bytetosendla.Length);
             System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
-
         private void SendLMCommand()
         {
             byte[] bytetosendlm = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x6D, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosendlm, 0, bytetosendlm.Length);
             System.Diagnostics.Debug.WriteLine("LM command sent.");
         }
-
-
         //Output Of Data Handler Received
         private void panel12_Paint_1(object sender, PaintEventArgs e)
         {
+            var displayParameters = ReadDisplayParameters();
+
             Graphics g = e.Graphics;
             Font font = new Font("Arial", 12);
             Brush brush = Brushes.Black;
@@ -645,35 +673,33 @@ namespace DriveyorUtility
                 // Draw Conveyor Parameters
                 if (conveyorParams != null)
                 {
-                    g.DrawString($"Pallet Length: {conveyorParams.PalletLength}", font, brush, new PointF(10, y));
-                    g.DrawString($"Stop Position: {conveyorParams.StopPosition}", font, brush, new PointF(10, y + lineHeight));
-                    g.DrawString($"Gap Size: {conveyorParams.GapSize}", font, brush, new PointF(10, y + lineHeight * 2));
-                    g.DrawString($"Over/Under Travel Size: {conveyorParams.TravelSize}", font, brush, new PointF(10, y + lineHeight * 3));
-                    g.DrawString($"Timeout Steps: {conveyorParams.TimeoutSteps}", font, brush, new PointF(10, y + lineHeight * 4));
-                    g.DrawString($"Direction: {conveyorParams.Direction}", font, brush, new PointF(10, y + lineHeight * 5));
-                    g.DrawString($"Double Sided: {conveyorParams.DoubleSided}", font, brush, new PointF(10, y + lineHeight * 6));
-                    g.DrawString($"Travel Correction: {conveyorParams.TravelCorrection}", font, brush, new PointF(10, y + lineHeight * 7));
-                    g.DrawString($"REV_INT: {conveyorParams.RevInternal}", font, brush, new PointF(10, y + lineHeight * 8));
-                    g.DrawString($"REV_ext: {conveyorParams.RevExternal}", font, brush, new PointF(10, y + lineHeight * 9));
-                    g.DrawString($"INH_ext: {conveyorParams.InhExternal}", font, brush, new PointF(10, y + lineHeight * 10));
-                    g.DrawString($"INH_INT: {conveyorParams.InhInternal}", font, brush, new PointF(10, y + lineHeight * 11));
-                    y += lineHeight * 12; // Adjust based on the number of parameters
+                    DrawParameter(g, font, brush, "Pallet Length", conveyorParams.PalletLength, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Stop Position", conveyorParams.StopPosition, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Gap Size", conveyorParams.GapSize, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Over/Under Travel Size", conveyorParams.TravelSize, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Timeout Steps", conveyorParams.TimeoutSteps, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Direction", conveyorParams.Direction, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Double Sided", conveyorParams.DoubleSided, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Travel Correction", conveyorParams.TravelCorrection, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "REV_INT", conveyorParams.RevInternal, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "REV_ext", conveyorParams.RevExternal, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "INH_ext", conveyorParams.InhExternal, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "INH_INT", conveyorParams.InhInternal, displayParameters, ref y, lineHeight);
                 }
 
                 // Draw Motor Parameters
                 if (motorParams != null)
                 {
-                    g.DrawString($"Motor Current: {motorParams.MC}", font, brush, new PointF(10, y));
-                    g.DrawString($"Motor Hold Current: {motorParams.MD}", font, brush, new PointF(10, y + lineHeight));
-                    g.DrawString($"Motor Microstepping Size: {motorParams.MI}", font, brush, new PointF(10, y + lineHeight * 2));
-                    g.DrawString($"Motor Run Speed: {motorParams.MR}", font, brush, new PointF(10, y + lineHeight * 3));
-                    g.DrawString($"Over/Under Travel Speed: {motorParams.MJ}", font, brush, new PointF(10, y + lineHeight * 4));
-                    g.DrawString($"Motor Acceleration: {motorParams.MA}", font, brush, new PointF(10, y + lineHeight * 5));
-                    g.DrawString($"Motor Direction: {motorParams.MB}", font, brush, new PointF(10, y + lineHeight * 6));
-                    g.DrawString($"Motor Speed Profile: {motorParams.MF}", font, brush, new PointF(10, y + lineHeight * 7));
-                    g.DrawString($"Mot OK: {motorParams.MotOK}", font, brush, new PointF(10, y + lineHeight * 8));
-                    g.DrawString($"Temperature: {motorParams.Temperature}C", font, brush, new PointF(10, y + lineHeight * 9));
-                    y += lineHeight * 10; // Adjust based on the number of parameters
+                    DrawParameter(g, font, brush, "Motor Current", motorParams.MC, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Hold Current", motorParams.MD, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Microstepping Size", motorParams.MI, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Run Speed", motorParams.MR, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Over/Under Travel Speed", motorParams.MJ, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Acceleration", motorParams.MA, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Direction", motorParams.MB, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Motor Speed Profile", motorParams.MF, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Mot OK", motorParams.MotOK, displayParameters, ref y, lineHeight);
+                    DrawParameter(g, font, brush, "Temperature", motorParams.Temperature, displayParameters, ref y, lineHeight);
                 }
 
                 y += lineHeight * 2; // Add extra space between cards
@@ -681,6 +707,13 @@ namespace DriveyorUtility
 
             // Adjust the AutoScrollMinSize based on the content height
             panel12.AutoScrollMinSize = new Size(panel12.Width, (int)y - panel12.AutoScrollPosition.Y);
+        }
+
+        private void DrawParameter(Graphics g, Font font, Brush brush, string parameterName, object parameterValue, Dictionary<string, string> displayParameters, ref float y, float lineHeight)
+        {
+            string displayName = displayParameters.ContainsKey(parameterName) ? displayParameters[parameterName] : parameterName;
+            g.DrawString($"{displayName}: {parameterValue}", font, brush, new PointF(10, y));
+            y += lineHeight;
         }
 
         private void ClearData()
@@ -968,7 +1001,6 @@ namespace DriveyorUtility
                 Debug.WriteLine($"Exception: {ex}");
             }
         }
-
         private void SetComboBoxSelectedValue(ComboBox comboBox, int value)
         {
             foreach (ComboBoxItem item in comboBox.Items)
@@ -1000,7 +1032,6 @@ namespace DriveyorUtility
                 return 0; // Return a default value or handle this case appropriately
             }
         }
-
         //method to calculate Motor Acceleration derrived from Motor Speed
         private int AutoCalcAccel()
         {
@@ -1027,9 +1058,6 @@ namespace DriveyorUtility
                 return -1; // Return a default or error value
             }
         }
-
-
-
         private void confirmButtonTimer_Tick(object sender, EventArgs e)
         {
             isButtonClickProcessed = false;

@@ -1,0 +1,26 @@
+# Note that to change the naming, alter the 2nd key value
+# eg to change the display name to from Pallet Length to Pallet Len the ans is
+# Pallet Length: Pallet Len
+
+Pallet Length: Pallet Length
+Stop Position: Stop Position
+Gap Size: Gap Size
+Over/Under Travel Size: Over/Under Travel Size
+Timeout Steps: Timeout Steps
+Direction: Direction
+Double Sided: Double Sided
+Travel Correction: Travel Correction
+REV_INT: Rev Internal
+REV_ext: Rev External
+INH_ext: Inhibit External
+INH_INT: Inhibit Internal
+Motor Current: Motor Current
+Motor Hold Current: Motor Hold Current
+Motor Microstepping Size: Motor Micro Size
+Motor Run Speed: Motor Run Speed
+Over/Under Travel Speed: Over/Under Travel Speed
+Motor Acceleration: Motor Acceleration
+Motor Direction: Motor Direction
+Motor Speed Profile: Motor Speed Profile
+Mot OK: Motor OK
+Temperature: Temperature

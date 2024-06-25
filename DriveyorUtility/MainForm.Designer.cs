@@ -344,10 +344,10 @@
             // CfmParamChange
             // 
             this.CfmParamChange.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CfmParamChange.Location = new System.Drawing.Point(247, 425);
+            this.CfmParamChange.Location = new System.Drawing.Point(70, 417);
             this.CfmParamChange.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.CfmParamChange.Name = "CfmParamChange";
-            this.CfmParamChange.Size = new System.Drawing.Size(220, 47);
+            this.CfmParamChange.Size = new System.Drawing.Size(384, 47);
             this.CfmParamChange.TabIndex = 21;
             this.CfmParamChange.Text = "Confirm Changes";
             this.CfmParamChange.UseVisualStyleBackColor = true;
