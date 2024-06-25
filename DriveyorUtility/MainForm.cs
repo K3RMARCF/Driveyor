@@ -939,7 +939,6 @@ namespace DriveyorUtility
                 Rf();
             }
         }
-
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
