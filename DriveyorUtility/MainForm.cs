@@ -86,22 +86,24 @@ namespace DriveyorUtility
             {
                 PopulateComboBoxWithAddressIDs();
                 var result = MessageBox.Show("Do you want to change all card parameters?", "Parameter Settings", MessageBoxButtons.YesNo);
+
+                // Always unsubscribe before subscribing to avoid multiple subscriptions
+                CfmParamChange.Click -= EditAllParam;
+                CfmParamChange.Click -= EditOneCardParam;
+
                 if (result == DialogResult.Yes)
                 {
                     // Change all card parameters
-                    CfmParamChange.Click -= EditOneCardParam;//unsub to this method
-                    CfmParamChange.Click += EditAllParam;//sub to this method
-
+                    CfmParamChange.Click += EditAllParam;
                 }
                 else
                 {
                     // Change specific card parameters
-                    CfmParamChange.Click -= EditAllParam; //unsub to this method
-                    CfmParamChange.Click += EditOneCardParam;//sub to this method
-
+                    CfmParamChange.Click += EditOneCardParam;
                 }
             }
         }
+
         private void btnConnect_Click(object sender, EventArgs e)
         {
             cv_ComPort = comB_COM_Port.Text;
@@ -348,8 +350,6 @@ namespace DriveyorUtility
                 }
             }
         }
-
-
         private ConveyorParameters UpdateConveyorParameters(ConveyorParameters current, ConveyorParameters update)
         {
             if (update.PalletLength != 0) current.PalletLength = update.PalletLength;

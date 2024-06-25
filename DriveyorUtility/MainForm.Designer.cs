@@ -745,7 +745,7 @@
             // 
             // confirmButtonTimer
             // 
-            this.confirmButtonTimer.Interval = 5000;
+            this.confirmButtonTimer.Interval = 3000;
             this.confirmButtonTimer.Tick += new System.EventHandler(this.confirmButtonTimer_Tick);
             // 
             // MainForm
