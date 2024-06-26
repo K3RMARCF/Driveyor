@@ -510,10 +510,20 @@ namespace DriveyorUtility
                     foreach (string part in parts)
                     {
                         string[] keyValue = part.Split('=');
+
+                        // Special case for "mot OK"
+                        if (keyValue.Length == 1 && keyValue[0].Trim() == "mot OK")
+                        {
+                            motorParams.MotOK = "OK";
+                            continue;
+                        }
+                        
                         if (keyValue.Length != 2) continue; // Ensure the line contains a key-value pair
 
                         string key = keyValue[0].Trim();
                         string value = keyValue[1].Trim();
+
+                        Console.WriteLine($"Extracting key: {key}, value: {value}");
 
                         switch (key)
                         {
@@ -541,25 +551,29 @@ namespace DriveyorUtility
                             case "mf":
                                 motorParams.MF = int.Parse(value);
                                 break;
-                            case "mot OK":
-                                motorParams.MotOK = value;
-                                break;
                             default:
+                                Console.WriteLine($"Unknown key: {key}");
                                 break;
                         }
                     }
+                }
+
+                // Handle temperature separately if it exists
+                foreach (string line in lines)
+                {
                     if (line.StartsWith("T="))
                     {
                         string temperatureString = line.Substring(2).TrimEnd('C');
                         motorParams.Temperature = double.Parse(temperatureString);
                     }
                 }
-                System.Diagnostics.Debug.WriteLine($"Extracted Motor Parameters: {motorParams}");
+
+                Console.WriteLine($"Extracted Motor Parameters: {motorParams}");
                 return motorParams;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error extracting motor parameters: {ex.Message}");
+                Console.WriteLine($"Error extracting motor parameters: {ex.Message}");
                 return null;
             }
         }

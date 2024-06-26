@@ -22,5 +22,5 @@ Over/Under Travel Speed: Over/Under Travel Speed
 Motor Acceleration: Motor Acceleration
 Motor Direction: Motor Direction
 Motor Speed Profile: Motor Speed Profile
-Mot OK: Motor OK
+Mot OK: Motor Status
 Temperature: Temperature
