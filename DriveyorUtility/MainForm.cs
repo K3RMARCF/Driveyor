@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using DriveyorUtility;
+using System.ComponentModel.DataAnnotations;
 
 namespace DriveyorUtility
 {
@@ -746,7 +747,6 @@ namespace DriveyorUtility
             g.DrawString($"{displayName}: {parameterValue}", font, brush, new PointF(10, y));
             y += lineHeight;
         }
-
         private void ClearData()
         {
             receivedDataList.Clear();
@@ -896,6 +896,13 @@ namespace DriveyorUtility
                     confirmButtonTimer.Stop();
                     return;
                 }
+                if (!ValidateMotorParameters())
+                {
+                    isButtonClickProcessed = false;
+                    CfmParamChange.Enabled = true;
+                    confirmButtonTimer.Stop();
+                    return;
+                }
                 string[] commands = new string[]
                 {
                     $"0000$cl{txtPalletLen.Text}\r\n",
@@ -935,6 +942,13 @@ namespace DriveyorUtility
                 if (cbBoxAddrID.SelectedItem == null)
                 {
                     MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    isButtonClickProcessed = false;
+                    CfmParamChange.Enabled = true;
+                    confirmButtonTimer.Stop();
+                    return;
+                }
+                if (!ValidateMotorParameters())
+                {
                     isButtonClickProcessed = false;
                     CfmParamChange.Enabled = true;
                     confirmButtonTimer.Stop();
@@ -1094,6 +1108,33 @@ namespace DriveyorUtility
             CfmParamChange.Enabled = true;
             confirmButtonTimer.Stop();
         }
+        private bool ValidateMotorParameters()
+        {
+            var motorParams = new MotorParameters
+            {
+                MC = int.Parse(txtMotorCurrent.Text),
+                MR = int.Parse(txtMotorSpeed.Text),
+                MJ = int.Parse(txtTravelSpeed.Text)
+            };
+
+            var context = new ValidationContext(motorParams, null, null);
+            var results = new List<ValidationResult>();
+
+            bool isValid = Validator.TryValidateObject(motorParams, context, results, true);
+
+            if (!isValid)
+            {
+                StringBuilder errorMessages = new StringBuilder();
+                foreach (var validationResult in results)
+                {
+                    errorMessages.AppendLine(validationResult.ErrorMessage);
+                }
+                MessageBox.Show(errorMessages.ToString(), "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return isValid;
+        }
+
     }
 }
 
