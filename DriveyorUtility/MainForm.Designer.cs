@@ -567,12 +567,12 @@
             // 
             this.panel8.BackColor = System.Drawing.Color.White;
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel8.Controls.Add(this.IdtIDLed);
             this.panel8.Controls.Add(this.EditSpecAddrID);
             this.panel8.Controls.Add(this.ConvParam);
             this.panel8.Controls.Add(this.SpecAddr);
             this.panel8.Controls.Add(this.btnAll_Blink);
             this.panel8.Controls.Add(this.btnAll_StopBlink);
-            this.panel8.Controls.Add(this.IdtIDLed);
             this.panel8.Controls.Add(this.panel9);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel8.Location = new System.Drawing.Point(0, 0);
@@ -586,7 +586,7 @@
             this.EditSpecAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.EditSpecAddrID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EditSpecAddrID.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EditSpecAddrID.Location = new System.Drawing.Point(18, 569);
+            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 569);
             this.EditSpecAddrID.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.EditSpecAddrID.Name = "EditSpecAddrID";
             this.EditSpecAddrID.Size = new System.Drawing.Size(256, 84);
@@ -600,7 +600,7 @@
             this.ConvParam.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.ConvParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ConvParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConvParam.Location = new System.Drawing.Point(18, 367);
+            this.ConvParam.Location = new System.Drawing.Point(20, 371);
             this.ConvParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.ConvParam.Name = "ConvParam";
             this.ConvParam.Size = new System.Drawing.Size(256, 84);
@@ -614,7 +614,7 @@
             this.SpecAddr.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.SpecAddr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SpecAddr.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpecAddr.Location = new System.Drawing.Point(20, 464);
+            this.SpecAddr.Location = new System.Drawing.Point(20, 268);
             this.SpecAddr.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.SpecAddr.Name = "SpecAddr";
             this.SpecAddr.Size = new System.Drawing.Size(256, 84);
@@ -635,7 +635,7 @@
             this.btnAll_Blink.Name = "btnAll_Blink";
             this.btnAll_Blink.Size = new System.Drawing.Size(256, 84);
             this.btnAll_Blink.TabIndex = 32;
-            this.btnAll_Blink.Text = "Identify All Card";
+            this.btnAll_Blink.Text = "Identify All Cards";
             this.btnAll_Blink.UseVisualStyleBackColor = true;
             this.btnAll_Blink.Click += new System.EventHandler(this.btnAll_Blink_Click);
             // 
@@ -648,9 +648,9 @@
             this.btnAll_StopBlink.Location = new System.Drawing.Point(20, 163);
             this.btnAll_StopBlink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_StopBlink.Name = "btnAll_StopBlink";
-            this.btnAll_StopBlink.Size = new System.Drawing.Size(260, 90);
+            this.btnAll_StopBlink.Size = new System.Drawing.Size(256, 90);
             this.btnAll_StopBlink.TabIndex = 33;
-            this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Card";
+            this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Cards";
             this.btnAll_StopBlink.UseVisualStyleBackColor = true;
             this.btnAll_StopBlink.Click += new System.EventHandler(this.btnAll_StopBlink_Click);
             // 
@@ -659,7 +659,7 @@
             this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IdtIDLed.Location = new System.Drawing.Point(20, 266);
+            this.IdtIDLed.Location = new System.Drawing.Point(20, 472);
             this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.IdtIDLed.Name = "IdtIDLed";
             this.IdtIDLed.Size = new System.Drawing.Size(256, 84);

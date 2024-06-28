@@ -762,6 +762,12 @@ namespace DriveyorUtility
                 return;
             // Get user input in messagebox, convert to hex then do the rest of the operation...
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter address ID:", "Input New Address ID", "0000");
+            if (userInput == "0000")
+            {
+                MessageBox.Show("Address ID '0000' is not allowed. Please enter a different address ID.", "Invalid Address ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (!string.IsNullOrEmpty(userInput))
             {
                 // Clear existing data
