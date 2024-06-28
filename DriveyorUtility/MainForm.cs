@@ -200,7 +200,9 @@ namespace DriveyorUtility
         private void Refresh_Click(object sender, EventArgs e)
         {
             {
-                CheckSerialPortConnection();
+                if (!CheckSerialPortConnection())
+                    return;
+                
                 // Clear all current data
                 ClearAllData();
                 ClearComboBox();

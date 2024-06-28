@@ -29,7 +29,4 @@ namespace DriveyorUtility
         public string MotOK { get; set; }
         public double Temperature { get; set; }
     }
-
-
-
 }
