@@ -659,7 +659,7 @@ namespace DriveyorUtility
             }
             else
             {
-                Microsoft.VisualBasic.Interaction.InputBox("Invalid Input");
+                MessageBox.Show("Invalid New Address Input");
             }
             //convert numbers to HEX and write
         }
