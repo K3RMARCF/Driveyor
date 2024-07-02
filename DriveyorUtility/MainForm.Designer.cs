@@ -71,12 +71,12 @@
             this.label3 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.IdtIDLed = new System.Windows.Forms.Button();
             this.EditSpecAddrID = new System.Windows.Forms.Button();
             this.ConvParam = new System.Windows.Forms.Button();
             this.SpecAddr = new System.Windows.Forms.Button();
             this.btnAll_Blink = new System.Windows.Forms.Button();
             this.btnAll_StopBlink = new System.Windows.Forms.Button();
-            this.IdtIDLed = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
@@ -126,7 +126,7 @@
             // 
             this.Refresh.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Refresh.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refresh.Location = new System.Drawing.Point(803, 32);
+            this.Refresh.Location = new System.Drawing.Point(1050, 31);
             this.Refresh.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Refresh.Name = "Refresh";
             this.Refresh.Size = new System.Drawing.Size(144, 52);
@@ -581,6 +581,20 @@
             this.panel8.Size = new System.Drawing.Size(296, 667);
             this.panel8.TabIndex = 2;
             // 
+            // IdtIDLed
+            // 
+            this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.IdtIDLed.Location = new System.Drawing.Point(20, 472);
+            this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.IdtIDLed.Name = "IdtIDLed";
+            this.IdtIDLed.Size = new System.Drawing.Size(256, 84);
+            this.IdtIDLed.TabIndex = 34;
+            this.IdtIDLed.Text = "Identify Specific Card";
+            this.IdtIDLed.UseVisualStyleBackColor = true;
+            this.IdtIDLed.Click += new System.EventHandler(this.IdtIDLed_Click);
+            // 
             // EditSpecAddrID
             // 
             this.EditSpecAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -653,20 +667,6 @@
             this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Cards";
             this.btnAll_StopBlink.UseVisualStyleBackColor = true;
             this.btnAll_StopBlink.Click += new System.EventHandler(this.btnAll_StopBlink_Click);
-            // 
-            // IdtIDLed
-            // 
-            this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IdtIDLed.Location = new System.Drawing.Point(20, 472);
-            this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.IdtIDLed.Name = "IdtIDLed";
-            this.IdtIDLed.Size = new System.Drawing.Size(256, 84);
-            this.IdtIDLed.TabIndex = 34;
-            this.IdtIDLed.Text = "Identify Specific Card";
-            this.IdtIDLed.UseVisualStyleBackColor = true;
-            this.IdtIDLed.Click += new System.EventHandler(this.IdtIDLed_Click);
             // 
             // panel9
             // 

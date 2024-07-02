@@ -580,7 +580,6 @@ namespace DriveyorUtility
                 return null;
             }
         }
-
         private string ExtractID(string message)
         {
             // Extract the ID from the message (assuming ID is always at the start)
@@ -602,29 +601,35 @@ namespace DriveyorUtility
             if (indata.Contains("#ok"))
             {
                 System.Diagnostics.Debug.WriteLine("Address successfully changed response received.");
+                sp.DataReceived -= AddressSettingDataReceivedHandler;
+                sp.DataReceived += DataReceivedHandler;
                 this.Invoke(new MethodInvoker(delegate
                 {
                     MessageBox.Show("Address successfully changed!");
                 }));
 
                 // Unsubscribe from the event to avoid multiple triggers
-                sp.DataReceived -= AddressSettingDataReceivedHandler;
-                sp.DataReceived += DataReceivedHandler;
+                
             }
             else if (indata.Contains("no enum"))
             {
                 System.Diagnostics.Debug.WriteLine("Address setting failed: No enumeration response received.");
+                sp.DataReceived -= AddressSettingDataReceivedHandler;
+                sp.DataReceived += DataReceivedHandler;
                 this.Invoke(new MethodInvoker(delegate
                 {
                     MessageBox.Show("Address setting failed: No enumeration.");
                 }));
 
                 // Unsubscribe from the event to avoid multiple triggers
+                
+            }
+            else
+            {
                 sp.DataReceived -= AddressSettingDataReceivedHandler;
                 sp.DataReceived += DataReceivedHandler;
             }
         }
-
         //-------------------------------------------------------------------------------
         //Identify tab functions
         private void btnAll_Blink_Click(object sender, EventArgs e)
