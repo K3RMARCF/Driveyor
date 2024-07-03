@@ -15,6 +15,7 @@ using System.Threading;
 
 using DriveyorUtility;
 using System.ComponentModel.DataAnnotations;
+using System.Collections;
 
 namespace DriveyorUtility
 {
@@ -26,12 +27,9 @@ namespace DriveyorUtility
             cbBoxAddrID.SelectedIndexChanged += cbBoxAddrID_SelectedIndexChanged;
             InitializeComboBoxItems();
         }
-        private enum CommandType
-        {
-            None,
-            LA,
-            LM
-        }
+        
+        
+
         private void InitializeComboBoxItems()
         {
             // Initialize Direction ComboBox
@@ -74,8 +72,11 @@ namespace DriveyorUtility
         private StringBuilder dataBuffer = new StringBuilder();
         private List<string> receivedDataList = new List<string>();
         private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters)>();
-        private CommandType currentCommand = CommandType.None;
+        
         private bool isButtonClickProcessed = false;
+        private HashSet<string> processedIDs = new HashSet<string>();
+        private Queue<string> idQueue = new Queue<string>();
+        private bool isProcessing = false;
         private void MainForm_Load(object sender, EventArgs e)
         {
             comB_COM_Port.Items.AddRange(COM_Port_Detected);
@@ -145,7 +146,6 @@ namespace DriveyorUtility
                 }
             }
         }
-
         //-------------------------------------------------------------------------------
         //General functions
         private Dictionary<string, string> ReadDisplayParameters()
@@ -199,22 +199,26 @@ namespace DriveyorUtility
         }
         private void Refresh_Click(object sender, EventArgs e)
         {
-            {
-                if (!CheckSerialPortConnection())
-                    return;
-                
-                // Clear all current data
-                ClearAllData();
-                ClearComboBox();
-                ClearTextFields();
-                SendLACommand();
-            }
+            if (!CheckSerialPortConnection())
+                return;
+
+            ClearAllData();
+            ClearComboBox();
+            ClearTextFields();
+            idQueue.Clear();
+            processedIDs.Clear();
+
+            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+            sp.Write(bytetosendla, 0, bytetosendla.Length);
+            System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
+
         private void ClearComboBox()
         {
             cbBoxAddrID.Items.Clear();
             cbBoxAddrID.Text = string.Empty; // Optionally clear the selected text
         }
+        
         private bool CheckSerialPortConnection()
         {
             if (sp == null)
@@ -227,17 +231,29 @@ namespace DriveyorUtility
 
         private void Rf()
         {
-            CheckSerialPortConnection();
+            
+
             ClearAllData();
             ClearComboBox();
             ClearTextFields();
-            SendLACommand();
+
+            idQueue.Clear();
+            processedIDs.Clear();
+
+            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+            sp.Write(bytetosendla, 0, bytetosendla.Length);
+            System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
+
         private void ClearAllData()
         {
             receivedDataList.Clear();
             dataBuffer.Clear();
             cardParameters.Clear();
+            ClearComboBox();
+            ClearTextFields();
+            idQueue.Clear();
+            processedIDs.Clear();
             panel12.Invalidate(); // Trigger repaint to clear the display
             System.Diagnostics.Debug.WriteLine("All data cleared.");
         }
@@ -255,16 +271,7 @@ namespace DriveyorUtility
             txtMotorSpeed.Clear();
             txtTravelSpeed.Clear();
         }
-        private void SendLACommand()
-        {
-
-            currentCommand = CommandType.LA; // Set the current command to LA
-
-            // Send the LA command
-            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosendla, 0, bytetosendla.Length);
-            System.Diagnostics.Debug.WriteLine("LA command sent.");
-        }
+       
         private void SendCommand(string hexAddress, string command)
         {
             string fullCommand = $"{hexAddress}${command}\r\n"; // Adjust the format as needed
@@ -272,8 +279,6 @@ namespace DriveyorUtility
             sp.Write(bytetosend, 0, bytetosend.Length);
             System.Diagnostics.Debug.WriteLine($"Command sent: {BitConverter.ToString(bytetosend)}");
         }
-
-
         private string ConvertToHex(string input)
         {
             // Assuming input is already in the correct format for an address (e.g., "0006")
@@ -300,107 +305,134 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Complete Message:");
                 System.Diagnostics.Debug.WriteLine(completeMessage);
 
-                // Add the complete message to the list
-                receivedDataList.Add(completeMessage);
-
                 // Remove the processed message from the buffer
                 dataBuffer.Remove(0, endIndex + 1);
 
-                // Extract ID and parameters from the complete message
+                // Extract ID from the message
                 string id = ExtractID(completeMessage);
                 var conveyorParams = ExtractConveyorParameters(completeMessage);
                 var motorParams = ExtractMotorParameters(completeMessage);
 
-                // Log extracted parameters
-                System.Diagnostics.Debug.WriteLine($"Extracted ID: {id}");
-                System.Diagnostics.Debug.WriteLine($"Extracted Conveyor Parameters: {conveyorParams}");
-                System.Diagnostics.Debug.WriteLine($"Extracted Motor Parameters: {motorParams}");
-
-                // Store parameters in the dictionary only if valid
                 if (!string.IsNullOrEmpty(id))
                 {
-                    if (!cardParameters.ContainsKey(id))
+                    // Add the ID to the queue
+                    if (!idQueue.Contains(id) && !processedIDs.Contains(id))
                     {
-                        cardParameters[id] = (conveyorParams, motorParams);
-                    }
-                    else
-                    {
-                        // Preserve the previous parameters if the new ones are null
-                        var currentConveyorParams = cardParameters[id].conveyorParams;
-                        var currentMotorParams = cardParameters[id].motorParams;
-
-                        if (conveyorParams != null)
-                        {
-                            currentConveyorParams = UpdateConveyorParameters(currentConveyorParams, conveyorParams);
-                        }
-
-                        if (motorParams != null)
-                        {
-                            currentMotorParams = UpdateMotorParameters(currentMotorParams, motorParams);
-                        }
-
-                        cardParameters[id] = (currentConveyorParams, currentMotorParams);
+                        idQueue.Enqueue(id);
+                        System.Diagnostics.Debug.WriteLine($"Enqueued ID: {id}");
                     }
 
-                    // Log the updated card parameters
-                    System.Diagnostics.Debug.WriteLine($"Updated card parameters for ID {id}:");
-                    System.Diagnostics.Debug.WriteLine($"Conveyor Parameters: {cardParameters[id].conveyorParams}");
-                    System.Diagnostics.Debug.WriteLine($"Motor Parameters: {cardParameters[id].motorParams}");
-                }
+                    // Update parameters if valid
+                    if (conveyorParams != null || motorParams != null)
+                    {
+                        if (!cardParameters.ContainsKey(id))
+                        {
+                            // If the ID does not exist in the dictionary, add it with the new parameters
+                            cardParameters[id] = (conveyorParams, motorParams);
+                        }
+                        else
+                        {
+                            // If the ID already exists, update the existing parameters
+                            var existingParams = cardParameters[id];
 
-                // Invalidate the panel to trigger the Paint event only if the parameters are valid
-                if (conveyorParams != null || motorParams != null)
-                {
-                    this.Invoke(new MethodInvoker(delegate {
-                        panel12.Invalidate();
-                    }));
-                }
-                this.Invoke(new MethodInvoker(delegate {
-                    PopulateComboBoxWithAddressIDs();
-                }));
-                if (currentCommand == CommandType.LA)
-                {
-                    Thread.Sleep(5000); // delay to let LA command finish reading all cards
-                    currentCommand = CommandType.LM; // Move to the next command
-                    SendLMCommand(); // Send the LM command
-                }
-                else if (currentCommand == CommandType.LM)
-                {
-                    currentCommand = CommandType.None; // Reset the command type after processing LM
+                            var updatedConveyorParams = UpdateConveyorParameters(existingParams.conveyorParams, conveyorParams);
+                            var updatedMotorParams = UpdateMotorParameters(existingParams.motorParams, motorParams);
+
+                            cardParameters[id] = (updatedConveyorParams, updatedMotorParams);
+                        }
+
+                        // Invalidate the panel to trigger a repaint
+                        this.Invoke(new MethodInvoker(delegate { panel12.Invalidate(); }));
+                    }
+
+                    // Start processing the queue if not already processing
+                    if (!isProcessing)
+                    {
+                        ProcessNextID();
+                    }
                 }
             }
         }
+
+        private void ProcessNextID()
+        {
+            if (idQueue.Count > 0)
+            {
+                isProcessing = true;
+                string nextID = idQueue.Dequeue();
+                processedIDs.Add(nextID); // Add ID to processed list
+                string lmCommand = $"{nextID}$lm\r\n";
+                byte[] bytetosend = Encoding.ASCII.GetBytes(lmCommand).Concat(new byte[] { 0x06 }).ToArray();
+                Debug.WriteLine($"Sending LM command: {lmCommand}");
+                SendCommandsforLM(bytetosend);
+            }
+            else
+            {
+                isProcessing = false;
+            }
+        }
+
+        private void SendCommandsforLM(byte[] command)
+        {
+            if (sp != null && sp.IsOpen)
+            {
+                sp.Write(command, 0, command.Length);
+                System.Diagnostics.Debug.WriteLine($"Command sent: {BitConverter.ToString(command)}");
+
+                // Process the next ID after a short delay to ensure the current command is processed
+                Task.Delay(2000).ContinueWith(t => ProcessNextID());
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Serial port is not open.");
+            }
+        }
+
+
         private ConveyorParameters UpdateConveyorParameters(ConveyorParameters current, ConveyorParameters update)
         {
-            if (update.PalletLength != 0) current.PalletLength = update.PalletLength;
-            if (update.StopPosition != 0) current.StopPosition = update.StopPosition;
-            if (update.GapSize != 0) current.GapSize = update.GapSize;
-            if (update.TravelSize != 0) current.TravelSize = update.TravelSize;
-            if (update.TimeoutSteps != 0) current.TimeoutSteps = update.TimeoutSteps;
-            if (update.Direction != 0) current.Direction = update.Direction;
-            if (update.DoubleSided != 0) current.DoubleSided = update.DoubleSided;
-            if (update.TravelCorrection != 0) current.TravelCorrection = update.TravelCorrection;
-            if (update.RevExternal != 0) current.RevExternal = update.RevExternal;
-            if (update.RevInternal != 0) current.RevInternal = update.RevInternal;
-            if (update.InhExternal != 0) current.InhExternal = update.InhExternal;
-            if (update.InhInternal != 0) current.InhInternal = update.InhInternal;
+            if (current == null) current = new ConveyorParameters();
+
+            if (update != null)
+            {
+                if (update.PalletLength != 0) current.PalletLength = update.PalletLength;
+                if (update.StopPosition != 0) current.StopPosition = update.StopPosition;
+                if (update.GapSize != 0) current.GapSize = update.GapSize;
+                if (update.TravelSize != 0) current.TravelSize = update.TravelSize;
+                if (update.TimeoutSteps != 0) current.TimeoutSteps = update.TimeoutSteps;
+                if (update.Direction != 0) current.Direction = update.Direction;
+                if (update.DoubleSided != 0) current.DoubleSided = update.DoubleSided;
+                if (update.TravelCorrection != 0) current.TravelCorrection = update.TravelCorrection;
+                if (update.RevExternal != 0) current.RevExternal = update.RevExternal;
+                if (update.RevInternal != 0) current.RevInternal = update.RevInternal;
+                if (update.InhExternal != 0) current.InhExternal = update.InhExternal;
+                if (update.InhInternal != 0) current.InhInternal = update.InhInternal;
+            }
+
             return current;
         }
 
         private MotorParameters UpdateMotorParameters(MotorParameters current, MotorParameters update)
         {
-            if (update.MC != 0) current.MC = update.MC;
-            if (update.MD != 0) current.MD = update.MD;
-            if (update.MI != 0) current.MI = update.MI;
-            if (update.MR != 0) current.MR = update.MR;
-            if (update.MJ != 0) current.MJ = update.MJ;
-            if (update.MA != 0) current.MA = update.MA;
-            if (update.MB != 0) current.MB = update.MB;
-            if (update.MF != 0) current.MF = update.MF;
-            if (!string.IsNullOrEmpty(update.MotOK)) current.MotOK = update.MotOK;
-            if (update.Temperature != 0) current.Temperature = update.Temperature;
+            if (current == null) current = new MotorParameters();
+
+            if (update != null)
+            {
+                if (update.MC != 0) current.MC = update.MC;
+                if (update.MD != 0) current.MD = update.MD;
+                if (update.MI != 0) current.MI = update.MI;
+                if (update.MR != 0) current.MR = update.MR;
+                if (update.MJ != 0) current.MJ = update.MJ;
+                if (update.MA != 0) current.MA = update.MA;
+                if (update.MB != 0) current.MB = update.MB;
+                if (update.MF != 0) current.MF = update.MF;
+                if (!string.IsNullOrEmpty(update.MotOK)) current.MotOK = update.MotOK;
+                if (update.Temperature != 0) current.Temperature = update.Temperature;
+            }
+
             return current;
         }
+
         private ConveyorParameters ExtractConveyorParameters(string message)
         {
             try
@@ -410,7 +442,6 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Extracting Conveyor Parameters:");
                 foreach (string line in lines)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Processing line: {line}");
                     if (line.Contains(","))
                     {
                         string[] keyValues = line.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -422,8 +453,7 @@ namespace DriveyorUtility
                             string key = parts[0].Trim();
                             string value = parts[1].Trim();
 
-                            System.Diagnostics.Debug.WriteLine($"Extracting key: {key}, value: {value}");
-
+                            
                             switch (key)
                             {
                                 case "dir":
@@ -458,7 +488,7 @@ namespace DriveyorUtility
                         string key = parts[0].Trim();
                         string value = parts[1].Trim();
 
-                        System.Diagnostics.Debug.WriteLine($"Extracting key: {key}, value: {value}");
+                        
 
                         switch (key)
                         {
@@ -526,7 +556,7 @@ namespace DriveyorUtility
                         string key = keyValue[0].Trim();
                         string value = keyValue[1].Trim();
 
-                        Console.WriteLine($"Extracting key: {key}, value: {value}");
+                        
 
                         switch (key)
                         {
@@ -571,7 +601,7 @@ namespace DriveyorUtility
                     }
                 }
 
-                Console.WriteLine($"Extracted Motor Parameters: {motorParams}");
+                
                 return motorParams;
             }
             catch (Exception ex)
@@ -590,6 +620,7 @@ namespace DriveyorUtility
             }
             return null;
         }
+
         private void AddressSettingDataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;
@@ -653,7 +684,7 @@ namespace DriveyorUtility
         {
             if (!CheckSerialPortConnection())
                 return;
-            ClearData();
+            ClearAllData();
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter the address ID:", "Input Address ID", "0000");
             //message box for user to put in addr ID
             if (!string.IsNullOrEmpty(userInput))
@@ -673,19 +704,33 @@ namespace DriveyorUtility
             if (!CheckSerialPortConnection())
                 return;
 
-            ClearData();
-            currentCommand = CommandType.LA; // Set the current command to LA
+            ClearAllData();
+            
             // Send the LA command
             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosendla, 0, bytetosendla.Length);
             System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
-        private void SendLMCommand()
+        private void ListSpecParam_Click(object sender, EventArgs e)
         {
-            byte[] bytetosendlm = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x6D, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosendlm, 0, bytetosendlm.Length);
-            System.Diagnostics.Debug.WriteLine("LM command sent.");
+            if (!CheckSerialPortConnection())
+                return;
+            ClearAllData();
+            string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter the address ID:", "Input Address ID", "0000");
+            //message box for user to put in addr ID
+            if (!string.IsNullOrEmpty(userInput))
+            {
+                string hexAddress = ConvertToHex(userInput);
+                Console.WriteLine(hexAddress);
+                SendCommand(hexAddress, "la"); // Example command
+            }
+            else
+            {
+                MessageBox.Show("Invalid New Address Input");
+            }
+            
         }
+
         //Output Of Data Handler Received
         private void panel12_Paint_1(object sender, PaintEventArgs e)
         {
@@ -1148,6 +1193,7 @@ namespace DriveyorUtility
             return isValid;
         }
 
+        
     }
 }
 

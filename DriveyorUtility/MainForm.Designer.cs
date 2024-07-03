@@ -80,6 +80,7 @@
             this.panel9 = new System.Windows.Forms.Panel();
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
+            this.ListSpecParam = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -126,10 +127,10 @@
             // 
             this.Refresh.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Refresh.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refresh.Location = new System.Drawing.Point(1050, 31);
+            this.Refresh.Location = new System.Drawing.Point(1052, 43);
             this.Refresh.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Refresh.Name = "Refresh";
-            this.Refresh.Size = new System.Drawing.Size(144, 52);
+            this.Refresh.Size = new System.Drawing.Size(123, 52);
             this.Refresh.TabIndex = 23;
             this.Refresh.Text = "Refresh";
             this.Refresh.UseVisualStyleBackColor = true;
@@ -140,7 +141,7 @@
             this.lblMsg2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblMsg2.AutoSize = true;
             this.lblMsg2.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMsg2.Location = new System.Drawing.Point(553, 55);
+            this.lblMsg2.Location = new System.Drawing.Point(560, 49);
             this.lblMsg2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMsg2.Name = "lblMsg2";
             this.lblMsg2.Size = new System.Drawing.Size(213, 30);
@@ -152,7 +153,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(20, 55);
+            this.label1.Location = new System.Drawing.Point(27, 49);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(139, 30);
@@ -164,7 +165,7 @@
             this.btnConnect.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnConnect.AutoSize = true;
             this.btnConnect.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnConnect.Location = new System.Drawing.Point(380, 32);
+            this.btnConnect.Location = new System.Drawing.Point(379, 37);
             this.btnConnect.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(152, 52);
@@ -567,6 +568,7 @@
             // 
             this.panel8.BackColor = System.Drawing.Color.White;
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel8.Controls.Add(this.ListSpecParam);
             this.panel8.Controls.Add(this.IdtIDLed);
             this.panel8.Controls.Add(this.EditSpecAddrID);
             this.panel8.Controls.Add(this.ConvParam);
@@ -586,10 +588,10 @@
             this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IdtIDLed.Location = new System.Drawing.Point(20, 472);
+            this.IdtIDLed.Location = new System.Drawing.Point(20, 492);
             this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.IdtIDLed.Name = "IdtIDLed";
-            this.IdtIDLed.Size = new System.Drawing.Size(256, 84);
+            this.IdtIDLed.Size = new System.Drawing.Size(256, 76);
             this.IdtIDLed.TabIndex = 34;
             this.IdtIDLed.Text = "Identify Specific Card";
             this.IdtIDLed.UseVisualStyleBackColor = true;
@@ -600,10 +602,10 @@
             this.EditSpecAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.EditSpecAddrID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EditSpecAddrID.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 569);
+            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 582);
             this.EditSpecAddrID.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.EditSpecAddrID.Name = "EditSpecAddrID";
-            this.EditSpecAddrID.Size = new System.Drawing.Size(256, 84);
+            this.EditSpecAddrID.Size = new System.Drawing.Size(256, 71);
             this.EditSpecAddrID.TabIndex = 37;
             this.EditSpecAddrID.Text = "Edit One Card Address";
             this.EditSpecAddrID.UseVisualStyleBackColor = true;
@@ -614,10 +616,10 @@
             this.ConvParam.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.ConvParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ConvParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConvParam.Location = new System.Drawing.Point(20, 371);
+            this.ConvParam.Location = new System.Drawing.Point(20, 314);
             this.ConvParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.ConvParam.Name = "ConvParam";
-            this.ConvParam.Size = new System.Drawing.Size(256, 84);
+            this.ConvParam.Size = new System.Drawing.Size(256, 69);
             this.ConvParam.TabIndex = 36;
             this.ConvParam.Text = "List All Parameters";
             this.ConvParam.UseVisualStyleBackColor = true;
@@ -628,10 +630,10 @@
             this.SpecAddr.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.SpecAddr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SpecAddr.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpecAddr.Location = new System.Drawing.Point(20, 268);
+            this.SpecAddr.Location = new System.Drawing.Point(20, 229);
             this.SpecAddr.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.SpecAddr.Name = "SpecAddr";
-            this.SpecAddr.Size = new System.Drawing.Size(256, 84);
+            this.SpecAddr.Size = new System.Drawing.Size(256, 70);
             this.SpecAddr.TabIndex = 35;
             this.SpecAddr.Text = "Edit All Card Address";
             this.SpecAddr.UseVisualStyleBackColor = true;
@@ -647,7 +649,7 @@
             this.btnAll_Blink.Location = new System.Drawing.Point(20, 64);
             this.btnAll_Blink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_Blink.Name = "btnAll_Blink";
-            this.btnAll_Blink.Size = new System.Drawing.Size(256, 84);
+            this.btnAll_Blink.Size = new System.Drawing.Size(256, 62);
             this.btnAll_Blink.TabIndex = 32;
             this.btnAll_Blink.Text = "Identify All Cards";
             this.btnAll_Blink.UseVisualStyleBackColor = true;
@@ -659,10 +661,10 @@
             this.btnAll_StopBlink.AutoSize = true;
             this.btnAll_StopBlink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAll_StopBlink.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAll_StopBlink.Location = new System.Drawing.Point(20, 163);
+            this.btnAll_StopBlink.Location = new System.Drawing.Point(20, 140);
             this.btnAll_StopBlink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_StopBlink.Name = "btnAll_StopBlink";
-            this.btnAll_StopBlink.Size = new System.Drawing.Size(256, 90);
+            this.btnAll_StopBlink.Size = new System.Drawing.Size(256, 72);
             this.btnAll_StopBlink.TabIndex = 33;
             this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Cards";
             this.btnAll_StopBlink.UseVisualStyleBackColor = true;
@@ -694,6 +696,20 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1348, 90);
             this.panel2.TabIndex = 0;
+            // 
+            // ListSpecParam
+            // 
+            this.ListSpecParam.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ListSpecParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ListSpecParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListSpecParam.Location = new System.Drawing.Point(20, 396);
+            this.ListSpecParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.ListSpecParam.Name = "ListSpecParam";
+            this.ListSpecParam.Size = new System.Drawing.Size(256, 81);
+            this.ListSpecParam.TabIndex = 38;
+            this.ListSpecParam.Text = "List One Card Parameters";
+            this.ListSpecParam.UseVisualStyleBackColor = true;
+            this.ListSpecParam.Click += new System.EventHandler(this.ListSpecParam_Click);
             // 
             // MainForm
             // 
@@ -783,6 +799,7 @@
         private System.Windows.Forms.Panel panel12;
         private System.Windows.Forms.Timer confirmButtonTimer;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button ListSpecParam;
     }
 }
 
