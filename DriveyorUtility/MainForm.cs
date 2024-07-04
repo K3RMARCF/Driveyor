@@ -72,8 +72,10 @@ namespace DriveyorUtility
         private StringBuilder dataBuffer = new StringBuilder();
         private List<string> receivedDataList = new List<string>();
         private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters)>();
-        
+        private ComboBox cbSelectID;
         private bool isButtonClickProcessed = false;
+        private HashSet<string> storedIDs = new HashSet<string>();
+        private bool idsLoaded = false;
         private HashSet<string> processedIDs = new HashSet<string>();
         private Queue<string> idQueue = new Queue<string>();
         private bool isProcessing = false;
@@ -86,12 +88,14 @@ namespace DriveyorUtility
             // Check if the selected tab is the "Parameters" tab
             if (tabControl1.SelectedTab == tabPage2)
             {
-                PopulateComboBoxWithAddressIDs();
+                PopulateComboBoxWithStoredIDs();
                 var result = MessageBox.Show("Do you want to change all card parameters?", "Parameter Settings", MessageBoxButtons.YesNo);
 
                 // Always unsubscribe before subscribing to avoid multiple subscriptions
                 CfmParamChange.Click -= EditAllParam;
                 CfmParamChange.Click -= EditOneCardParam;
+
+                RemoveDynamicControls();
 
                 if (result == DialogResult.Yes)
                 {
@@ -102,11 +106,73 @@ namespace DriveyorUtility
                 {
                     // Change specific card parameters
                     CfmParamChange.Click += EditOneCardParam;
+
+                    // Add Label and ComboBox dynamically to panel7
+                    AddDynamicControls();
                 }
+            }
+            else
+            {
+                // Clear previous dynamic controls if they exist
+                RemoveDynamicControls();
+            }
+        }
+        private void AddDynamicControls()
+        {
+            if (panel7.Controls["lblSelectID"] == null && panel7.Controls["cbSelectID"] == null)
+            {
+                // Add Label
+                Label lblSelectID = new Label
+                {
+                    Name = "lblSelectID",
+                    Text = "Write To Card #:",
+                    Location = new Point(263, 27), // Adjust location as needed
+                    AutoSize = true,
+                    Font = new Font("Berlin Sans FB", 15.75F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0))) // Match the font
+                };
+
+                // Add ComboBox
+                cbSelectID = new ComboBox
+                {
+                    Name = "cbSelectID",
+                    Location = new Point(420, 25), // Adjust location as needed
+                    DropDownStyle = ComboBoxStyle.DropDownList,
+                    Width = 65 // Adjust width as needed
+                };
+
+                // Add items to the ComboBox from storedIDs
+                foreach (string id in storedIDs)
+                {
+                    cbSelectID.Items.Add(id);
+                }
+
+                // Add the Label and ComboBox to panel7
+                panel7.Controls.Add(lblSelectID);
+                panel7.Controls.Add(cbSelectID);
+
+                // Force a refresh of the panel7 to ensure the controls are rendered
+                panel7.Invalidate();
+                panel7.Update();
             }
         }
 
-        private void btnConnect_Click(object sender, EventArgs e)
+        private void RemoveDynamicControls()
+        {
+            Control lblSelectID = panel7.Controls["lblSelectID"];
+            Control cbSelectID = panel7.Controls["cbSelectID"];
+
+            if (lblSelectID != null)
+            {
+                panel7.Controls.Remove(lblSelectID);
+            }
+
+            if (cbSelectID != null)
+            {
+                panel7.Controls.Remove(cbSelectID);
+            }
+        }
+
+        private async void btnConnect_Click(object sender, EventArgs e)
         {
             cv_ComPort = comB_COM_Port.Text;
 
@@ -123,6 +189,13 @@ namespace DriveyorUtility
                     sp.RtsEnable = false;
                     lblMsg2.Text = "Connection Success";
                     btnConnect.Text = "Disconnect";
+
+                    if (!idsLoaded)
+                    {
+                        // Send the 0000$la command only if IDs are not loaded
+                        await Task.Delay(1000);
+                        SendLACommand();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -197,22 +270,26 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Serial port is not open.");
             }
         }
+        private void SendLACommand()
+        {
+            if (sp != null && sp.IsOpen)
+            {
+                byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+                sp.Write(bytetosendla, 0, bytetosendla.Length);
+                System.Diagnostics.Debug.WriteLine("LA command sent.");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Serial port is not open.");
+            }
+        }
         private void Refresh_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
                 return;
 
-            ClearAllData();
-            ClearComboBox();
-            ClearTextFields();
-            idQueue.Clear();
-            processedIDs.Clear();
-
-            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosendla, 0, bytetosendla.Length);
-            System.Diagnostics.Debug.WriteLine("LA command sent.");
+            Rf();
         }
-
         private void ClearComboBox()
         {
             cbBoxAddrID.Items.Clear();
@@ -229,17 +306,12 @@ namespace DriveyorUtility
             return true;
         }
 
-        private void Rf()
+        private void Rf() //clears storedID as well
         {
-            
-
             ClearAllData();
             ClearComboBox();
             ClearTextFields();
-
-            idQueue.Clear();
-            processedIDs.Clear();
-
+            storedIDs.Clear();
             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosendla, 0, bytetosendla.Length);
             System.Diagnostics.Debug.WriteLine("LA command sent.");
@@ -250,10 +322,9 @@ namespace DriveyorUtility
             receivedDataList.Clear();
             dataBuffer.Clear();
             cardParameters.Clear();
-            ClearComboBox();
-            ClearTextFields();
             idQueue.Clear();
             processedIDs.Clear();
+            
             panel12.Invalidate(); // Trigger repaint to clear the display
             System.Diagnostics.Debug.WriteLine("All data cleared.");
         }
@@ -315,7 +386,10 @@ namespace DriveyorUtility
 
                 if (!string.IsNullOrEmpty(id))
                 {
-                    // Add the ID to the queue
+                    // Store the ID in the HashSet
+                    storedIDs.Add(id);
+
+                    // Add the ID to the queue if not already in queue or processed
                     if (!idQueue.Contains(id) && !processedIDs.Contains(id))
                     {
                         idQueue.Enqueue(id);
@@ -387,7 +461,7 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Serial port is not open.");
             }
         }
-
+        
 
         private ConveyorParameters UpdateConveyorParameters(ConveyorParameters current, ConveyorParameters update)
         {
@@ -670,21 +744,25 @@ namespace DriveyorUtility
             // cmd = "0000$si";
             byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x69, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosend, 0, bytetosend.Length);
+            var result = MessageBox.Show("Is the onboard LED D5 blinking green", "Driveyor Utility", MessageBoxButtons.YesNo);
 
-        }
-        private void btnAll_StopBlink_Click(object sender, EventArgs e)
-        {
-            if (!CheckSerialPortConnection())
-                return;
-            // cmd = "0000$sj";
-            byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x6A, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosend, 0, bytetosend.Length);
+            if (result == DialogResult.Yes)
+            {
+                byte[] bytetosendoff = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x6A, 0x0D, 0x0A, 0x06 };
+                sp.Write(bytetosendoff, 0, bytetosendoff.Length);
+            }
+            else
+            {
+                // Change specific card parameters
+                MessageBox.Show("Please check your physical connection");
+            }
+
         }
         private void IdtIDLed_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
                 return;
-            ClearAllData();
+            
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter the address ID:", "Input Address ID", "0000");
             //message box for user to put in addr ID
             if (!string.IsNullOrEmpty(userInput))
@@ -692,6 +770,17 @@ namespace DriveyorUtility
                 string hexAddress = ConvertToHex(userInput);
                 Console.WriteLine(hexAddress);
                 SendCommand(hexAddress, "si"); // Example command
+                var result = MessageBox.Show("Is the onboard LED D5 blinking green", "Driveyor Utility", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    byte[] bytetosendoff = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x6A, 0x0D, 0x0A, 0x06 };
+                    sp.Write(bytetosendoff, 0, bytetosendoff.Length);
+                }
+                else
+                {
+                    // Change specific card parameters
+                    MessageBox.Show("Please check your physical connection");
+                }
             }
             else
             {
@@ -704,7 +793,7 @@ namespace DriveyorUtility
             if (!CheckSerialPortConnection())
                 return;
 
-            ClearAllData();
+            ClearData();
             
             // Send the LA command
             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
@@ -715,20 +804,92 @@ namespace DriveyorUtility
         {
             if (!CheckSerialPortConnection())
                 return;
-            ClearAllData();
+
+            // Get user input in messagebox
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter the address ID:", "Input Address ID", "0000");
-            //message box for user to put in addr ID
+
+            // Validate the user input
             if (!string.IsNullOrEmpty(userInput))
             {
-                string hexAddress = ConvertToHex(userInput);
-                Console.WriteLine(hexAddress);
-                SendCommand(hexAddress, "la"); // Example command
+                string formattedAddress = userInput.PadLeft(4, '0'); // Ensure the address is 4 digits
+
+                if (storedIDs.Contains(formattedAddress))
+                {
+                    // If the address exists, show the parameters for the selected address
+                    DisplayParametersForID(formattedAddress);
+                }
+                else
+                {
+                    MessageBox.Show("The entered address ID does not exist.", "Invalid Address ID", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             else
             {
-                MessageBox.Show("Invalid New Address Input");
+                MessageBox.Show("Invalid Input");
             }
-            
+        }
+
+        // Method to display parameters for a specific ID
+        private void DisplayParametersForID(string id)
+        {
+            if (cardParameters.ContainsKey(id))
+            {
+                var parameters = cardParameters[id];
+                var conveyorParams = parameters.conveyorParams;
+                var motorParams = parameters.motorParams;
+
+                // Create a StringBuilder for constructing the message
+                StringBuilder messageBuilder = new StringBuilder();
+                messageBuilder.AppendLine($"ID: {id}");
+
+                var displayParameters = ReadDisplayParameters();
+
+                // Append Conveyor Parameters
+                if (conveyorParams != null)
+                {
+                    AppendParameter(messageBuilder, "Pallet Length", conveyorParams.PalletLength, displayParameters);
+                    AppendParameter(messageBuilder, "Stop Position", conveyorParams.StopPosition, displayParameters);
+                    AppendParameter(messageBuilder, "Gap Size", conveyorParams.GapSize, displayParameters);
+                    AppendParameter(messageBuilder, "Over/Under Travel Size", conveyorParams.TravelSize, displayParameters);
+                    AppendParameter(messageBuilder, "Timeout Steps", conveyorParams.TimeoutSteps, displayParameters);
+                    AppendParameter(messageBuilder, "Direction", conveyorParams.Direction, displayParameters);
+                    AppendParameter(messageBuilder, "Double Sided", conveyorParams.DoubleSided, displayParameters);
+                    AppendParameter(messageBuilder, "Travel Correction", conveyorParams.TravelCorrection, displayParameters);
+                    AppendParameter(messageBuilder, "Rev External", conveyorParams.RevExternal, displayParameters);
+                    AppendParameter(messageBuilder, "Rev Internal", conveyorParams.RevInternal, displayParameters);
+                    AppendParameter(messageBuilder, "Inh External", conveyorParams.InhExternal, displayParameters);
+                    AppendParameter(messageBuilder, "Inh Internal", conveyorParams.InhInternal, displayParameters);
+                }
+
+                // Append Motor Parameters
+                if (motorParams != null)
+                {
+                    AppendParameter(messageBuilder, "Motor Current", motorParams.MC, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Hold Current", motorParams.MD, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Micro Size", motorParams.MI, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Run Speed", motorParams.MR, displayParameters);
+                    AppendParameter(messageBuilder, "Over/Under Travel Speed", motorParams.MJ, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Acceleration", motorParams.MA, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Direction", motorParams.MB, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Speed Profile", motorParams.MF, displayParameters);
+                    AppendParameter(messageBuilder, "Motor Status", motorParams.MotOK, displayParameters);
+                    AppendParameter(messageBuilder, "Temperature", motorParams.Temperature, displayParameters);
+                }
+
+                // Show the message box with the parameters
+                ParameterDisplayForm parameterDisplayForm = new ParameterDisplayForm(messageBuilder.ToString());
+                parameterDisplayForm.ShowDialog();
+            }
+            else
+            {
+                MessageBox.Show($"No parameters found for ID: {id}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void AppendParameter(StringBuilder messageBuilder, string parameterName, object parameterValue, Dictionary<string, string> displayParameters)
+        {
+            string displayName = displayParameters.ContainsKey(parameterName) ? displayParameters[parameterName] : parameterName;
+            messageBuilder.AppendLine($"{displayName}: {parameterValue}");
         }
 
         //Output Of Data Handler Received
@@ -805,13 +966,13 @@ namespace DriveyorUtility
             dataBuffer.Clear();
             panel12.Invalidate(); // Trigger repaint to clear the display
         }
-
         //--------------------------------------------------------------------------------------------------
         //Set Address Functions
-        private void SpecAddr_Click(object sender, EventArgs e)
+        private async void SpecAddr_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
                 return;
+
             // Get user input in messagebox, convert to hex then do the rest of the operation...
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter address ID:", "Input New Address ID", "0000");
             if (userInput == "0000")
@@ -832,24 +993,24 @@ namespace DriveyorUtility
                 // 1. Send 0000$sz
                 byte[] bytetosend_sz = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x7A, 0x0D, 0x0A, 0x06 };
                 SendCommands(bytetosend_sz);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
 
                 // 2. Send 0000$sl with the new address
                 string formattedAddress = userInput.PadLeft(4, '0'); // Ensure the address is 4 digits
                 string fullCommand_sl = $"0000$sl{formattedAddress}\r\n";
                 byte[] bytetosend_sl = Encoding.ASCII.GetBytes(fullCommand_sl).Concat(new byte[] { 0x06 }).ToArray();
                 SendCommands(bytetosend_sl);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
 
                 // 3. Send 0000$sf
                 byte[] bytetosend_sf = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x66, 0x0D, 0x0A, 0x06 };
                 SendCommands(bytetosend_sf);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
 
                 // 4. Send 0000$se
                 byte[] bytetosend_se = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x73, 0x65, 0x0D, 0x0A, 0x06 };
                 SendCommands(bytetosend_se);
-                Thread.Sleep(1000);
+                await Task.Delay(1000);
 
                 // Print the commands to the console
                 Console.WriteLine("Commands sent:");
@@ -859,8 +1020,8 @@ namespace DriveyorUtility
                 Console.WriteLine("0000$se");
 
                 // Clear data after sending all commands to ensure display is updated
-                ClearData();
-                Rf();
+                Rf();//This method itself has a send 0000$la command inside               
+                
             }
             else
             {
@@ -871,6 +1032,7 @@ namespace DriveyorUtility
         {
             if (!CheckSerialPortConnection())
                 return;
+
             // Prompt the user for the current address ID
             string currentAddress = Microsoft.VisualBasic.Interaction.InputBox("Enter the current address ID:", "Input Current Address ID", "0000");
             if (string.IsNullOrEmpty(currentAddress))
@@ -897,6 +1059,11 @@ namespace DriveyorUtility
                 cardParameters.Remove(formattedCurrentAddress);
             }
 
+            if (storedIDs.Contains(formattedCurrentAddress))
+            {
+                storedIDs.Remove(formattedCurrentAddress);
+            }
+
             // Clear existing data
             ClearData();
 
@@ -905,36 +1072,56 @@ namespace DriveyorUtility
             string fullCommand_sl = $"{formattedCurrentAddress}$sl{formattedNewAddress}\r\n";
             byte[] bytetosend_sl = Encoding.ASCII.GetBytes(fullCommand_sl).Concat(new byte[] { 0x06 }).ToArray();
             SendCommands(bytetosend_sl);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
 
-            // 2. Send currentAddress$sf\r\n
+            // 2. Send {currentAddress}$sf\r\n
             string command_sf = $"{formattedCurrentAddress}$sf\r\n";
             byte[] bytetosend_sf = Encoding.ASCII.GetBytes(command_sf).Concat(new byte[] { 0x06 }).ToArray();
             SendCommands(bytetosend_sf);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
 
-            // 3. Send currentAddress$se\r\n
+            // 3. Send {currentAddress}$se\r\n
             string command_se = $"{formattedCurrentAddress}$se\r\n";
             byte[] bytetosend_se = Encoding.ASCII.GetBytes(command_se).Concat(new byte[] { 0x06 }).ToArray();
             SendCommands(bytetosend_se);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
 
             // Print the commands to the console
             Console.WriteLine("Commands sent:");
             Console.WriteLine(fullCommand_sl);
             Console.WriteLine(command_sf);
             Console.WriteLine(command_se);
-            ClearData();
-            // Refresh data after changing the address
-            Rf();
-        }
 
+            // Update the HashSet and Dictionary with the new address
+            storedIDs.Add(formattedNewAddress);
+
+            // Send the LA command for the new address
+            SendLAForNewAddress(formattedNewAddress);
+            PopulateComboBoxWithStoredIDs(); // Populate the ComboBox with sorted IDs
+        }
+        private void SendLAForNewAddress(string address)
+        {
+            if (sp != null && sp.IsOpen)
+            {
+                string laCommand = $"{address}$la\r\n";
+                byte[] bytetosend = Encoding.ASCII.GetBytes(laCommand).Concat(new byte[] { 0x06 }).ToArray();
+                sp.Write(bytetosend, 0, bytetosend.Length);
+                System.Diagnostics.Debug.WriteLine($"LA command sent for address: {address}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Serial port is not open.");
+            }
+        }
         //--------------------------------------------------------------------------------------------------
         //Set Params
-        private void PopulateComboBoxWithAddressIDs()
+        private void PopulateComboBoxWithStoredIDs()
         {
             cbBoxAddrID.Items.Clear();
-            foreach (var id in cardParameters.Keys)
+            //sort from ascending order
+            var sortedIDs = storedIDs.OrderBy(id => id).ToList();
+            //add all IDs in combobox
+            foreach (var id in sortedIDs)
             {
                 cbBoxAddrID.Items.Add(id);
             }
@@ -985,8 +1172,18 @@ namespace DriveyorUtility
                     Thread.Sleep(1000); // Add a 500 milliseconds delay between commands
                 }
 
-                MessageBox.Show("All card parameters changed.");
-                Rf();
+                ClearAllData();
+                ClearTextFields();
+                foreach (var item in cbBoxAddrID.Items)
+                {
+                    string address = item.ToString().PadLeft(4, '0'); // Ensure the address is 4 digits
+                    string laCommand = $"{address}$la\r\n";
+                    byte[] bytetosend = Encoding.ASCII.GetBytes(laCommand).Concat(new byte[] { 0x06 }).ToArray();
+                    Debug.WriteLine($"Sending LA command: {laCommand}");
+                    SendCommands(bytetosend);
+                    Thread.Sleep(800); // Add a 500 milliseconds delay between commands
+                }
+                MessageBox.Show($"Parameters for all cards changed.");
             }
         }
 
@@ -997,7 +1194,10 @@ namespace DriveyorUtility
                 isButtonClickProcessed = true;
                 CfmParamChange.Enabled = false;
                 confirmButtonTimer.Start();
-                if (cbBoxAddrID.SelectedItem == null)
+
+                ComboBox cbSelectID = panel7.Controls["cbSelectID"] as ComboBox;
+
+                if (cbSelectID == null || cbSelectID.SelectedItem == null)
                 {
                     MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     isButtonClickProcessed = false;
@@ -1005,6 +1205,7 @@ namespace DriveyorUtility
                     confirmButtonTimer.Stop();
                     return;
                 }
+
                 if (!ValidateMotorParameters())
                 {
                     isButtonClickProcessed = false;
@@ -1012,7 +1213,8 @@ namespace DriveyorUtility
                     confirmButtonTimer.Stop();
                     return;
                 }
-                string selectedID = cbBoxAddrID.SelectedItem.ToString();
+
+                string selectedID = cbSelectID.SelectedItem.ToString();
 
                 string[] commands = new string[]
                 {
@@ -1037,11 +1239,22 @@ namespace DriveyorUtility
                     SendCommands(bytetosend);
                     Thread.Sleep(1000); // Add a 2000 milliseconds delay between commands
                 }
+                ClearAllData();
+                ClearTextFields();
 
+                foreach (var item in cbBoxAddrID.Items)
+                {
+                    string address = item.ToString().PadLeft(4, '0'); // Ensure the address is 4 digits
+                    string laCommand = $"{address}$la\r\n";
+                    byte[] bytetosend = Encoding.ASCII.GetBytes(laCommand).Concat(new byte[] { 0x06 }).ToArray();
+                    Debug.WriteLine($"Sending LA command: {laCommand}");
+                    SendCommands(bytetosend);
+                    Thread.Sleep(800); // Add a 1000 milliseconds delay between commands
+                }
                 MessageBox.Show($"Parameters for card {selectedID} changed.");
-                Rf();
             }
         }
+
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -1193,7 +1406,54 @@ namespace DriveyorUtility
             return isValid;
         }
 
-        
+        private void ImpTxtSetting_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text Files (*.txt)|*.txt|All Files (*.*)|*.*";
+            openFileDialog.DefaultExt = "txt";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    string filePath = openFileDialog.FileName;
+                    string fileContent = File.ReadAllText(filePath);
+                    PopulateFieldsFromText(fileContent);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error reading file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void PopulateFieldsFromText(string text)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(new[] { ':' }, 2);
+                if (parts.Length == 2)
+                {
+                    string key = parts[0].Trim();
+                    string value = parts[1].Trim();
+                    parameters[key] = value;
+                }
+            }
+
+            if (parameters.ContainsKey("Pallet Len")) txtPalletLen.Text = parameters["Pallet Len"];
+            if (parameters.ContainsKey("Stop Pos")) txtStopPos.Text = parameters["Stop Pos"];
+            if (parameters.ContainsKey("Gap Size")) txtGapSize.Text = parameters["Gap Size"];
+            if (parameters.ContainsKey("Over/Under Travel Size")) txtTravelSteps.Text = parameters["Over/Under Travel Size"];
+            if (parameters.ContainsKey("Direction")) CmbBoxDir.SelectedIndex = int.Parse(parameters["Direction"]);
+            if (parameters.ContainsKey("Double-sided")) CmbBoxDbSide.SelectedIndex = int.Parse(parameters["Double-sided"]);
+            if (parameters.ContainsKey("Travel Correction")) CmbBoxTravCorr.SelectedIndex = int.Parse(parameters["Travel Correction"]);
+            if (parameters.ContainsKey("Motor Current")) txtMotorCurrent.Text = parameters["Motor Current"];
+            if (parameters.ContainsKey("Motor Speed")) txtMotorSpeed.Text = parameters["Motor Speed"];
+            if (parameters.ContainsKey("Over/Under Travel Speed")) txtTravelSpeed.Text = parameters["Over/Under Travel Speed"];
+        }
+
     }
 }
 

@@ -67,20 +67,21 @@
             this.txtStopPos = new System.Windows.Forms.TextBox();
             this.panel5 = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
+            this.label12 = new System.Windows.Forms.Label();
+            this.ImpTxtSetting = new System.Windows.Forms.Button();
             this.cbBoxAddrID = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
+            this.ConvParam = new System.Windows.Forms.Button();
+            this.ListSpecParam = new System.Windows.Forms.Button();
             this.IdtIDLed = new System.Windows.Forms.Button();
             this.EditSpecAddrID = new System.Windows.Forms.Button();
-            this.ConvParam = new System.Windows.Forms.Button();
             this.SpecAddr = new System.Windows.Forms.Button();
             this.btnAll_Blink = new System.Windows.Forms.Button();
-            this.btnAll_StopBlink = new System.Windows.Forms.Button();
             this.panel9 = new System.Windows.Forms.Panel();
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
-            this.ListSpecParam = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -339,12 +340,12 @@
             // CfmParamChange
             // 
             this.CfmParamChange.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CfmParamChange.Location = new System.Drawing.Point(70, 419);
+            this.CfmParamChange.Location = new System.Drawing.Point(35, 425);
             this.CfmParamChange.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.CfmParamChange.Name = "CfmParamChange";
-            this.CfmParamChange.Size = new System.Drawing.Size(384, 47);
+            this.CfmParamChange.Size = new System.Drawing.Size(419, 47);
             this.CfmParamChange.TabIndex = 21;
-            this.CfmParamChange.Text = "Confirm Changes";
+            this.CfmParamChange.Text = "Program";
             this.CfmParamChange.UseVisualStyleBackColor = true;
             // 
             // groupBox1
@@ -522,6 +523,8 @@
             // panel7
             // 
             this.panel7.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel7.Controls.Add(this.label12);
+            this.panel7.Controls.Add(this.ImpTxtSetting);
             this.panel7.Controls.Add(this.cbBoxAddrID);
             this.panel7.Controls.Add(this.label3);
             this.panel7.Dock = System.Windows.Forms.DockStyle.Left;
@@ -531,14 +534,35 @@
             this.panel7.Size = new System.Drawing.Size(1033, 100);
             this.panel7.TabIndex = 0;
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(656, 38);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(235, 30);
+            this.label12.TabIndex = 45;
+            this.label12.Text = "Read From TextFile:";
+            // 
+            // ImpTxtSetting
+            // 
+            this.ImpTxtSetting.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ImpTxtSetting.Location = new System.Drawing.Point(898, 34);
+            this.ImpTxtSetting.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.ImpTxtSetting.Name = "ImpTxtSetting";
+            this.ImpTxtSetting.Size = new System.Drawing.Size(127, 37);
+            this.ImpTxtSetting.TabIndex = 44;
+            this.ImpTxtSetting.Text = "Import";
+            this.ImpTxtSetting.UseVisualStyleBackColor = true;
+            this.ImpTxtSetting.Click += new System.EventHandler(this.ImpTxtSetting_Click);
+            // 
             // cbBoxAddrID
             // 
             this.cbBoxAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.cbBoxAddrID.FormattingEnabled = true;
-            this.cbBoxAddrID.Location = new System.Drawing.Point(585, 31);
+            this.cbBoxAddrID.Location = new System.Drawing.Point(242, 31);
             this.cbBoxAddrID.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.cbBoxAddrID.Name = "cbBoxAddrID";
-            this.cbBoxAddrID.Size = new System.Drawing.Size(160, 37);
+            this.cbBoxAddrID.Size = new System.Drawing.Size(101, 37);
             this.cbBoxAddrID.TabIndex = 19;
             // 
             // label3
@@ -546,12 +570,12 @@
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(75, 34);
+            this.label3.Location = new System.Drawing.Point(4, 34);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(481, 30);
+            this.label3.Size = new System.Drawing.Size(230, 30);
             this.label3.TabIndex = 20;
-            this.label3.Text = "Import/Modify From Current Card Setting:";
+            this.label3.Text = "Read From Card #:";
             // 
             // panel4
             // 
@@ -568,13 +592,12 @@
             // 
             this.panel8.BackColor = System.Drawing.Color.White;
             this.panel8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel8.Controls.Add(this.ConvParam);
             this.panel8.Controls.Add(this.ListSpecParam);
             this.panel8.Controls.Add(this.IdtIDLed);
             this.panel8.Controls.Add(this.EditSpecAddrID);
-            this.panel8.Controls.Add(this.ConvParam);
             this.panel8.Controls.Add(this.SpecAddr);
             this.panel8.Controls.Add(this.btnAll_Blink);
-            this.panel8.Controls.Add(this.btnAll_StopBlink);
             this.panel8.Controls.Add(this.panel9);
             this.panel8.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel8.Location = new System.Drawing.Point(0, 0);
@@ -583,12 +606,40 @@
             this.panel8.Size = new System.Drawing.Size(296, 667);
             this.panel8.TabIndex = 2;
             // 
+            // ConvParam
+            // 
+            this.ConvParam.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ConvParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ConvParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ConvParam.Location = new System.Drawing.Point(20, 52);
+            this.ConvParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.ConvParam.Name = "ConvParam";
+            this.ConvParam.Size = new System.Drawing.Size(256, 72);
+            this.ConvParam.TabIndex = 36;
+            this.ConvParam.Text = "List All Cards Parameters";
+            this.ConvParam.UseVisualStyleBackColor = true;
+            this.ConvParam.Click += new System.EventHandler(this.ConvParam_Click);
+            // 
+            // ListSpecParam
+            // 
+            this.ListSpecParam.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ListSpecParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ListSpecParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ListSpecParam.Location = new System.Drawing.Point(20, 130);
+            this.ListSpecParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
+            this.ListSpecParam.Name = "ListSpecParam";
+            this.ListSpecParam.Size = new System.Drawing.Size(256, 81);
+            this.ListSpecParam.TabIndex = 38;
+            this.ListSpecParam.Text = "List One Card Parameters";
+            this.ListSpecParam.UseVisualStyleBackColor = true;
+            this.ListSpecParam.Click += new System.EventHandler(this.ListSpecParam_Click);
+            // 
             // IdtIDLed
             // 
             this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IdtIDLed.Location = new System.Drawing.Point(20, 492);
+            this.IdtIDLed.Location = new System.Drawing.Point(20, 479);
             this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.IdtIDLed.Name = "IdtIDLed";
             this.IdtIDLed.Size = new System.Drawing.Size(256, 76);
@@ -602,7 +653,7 @@
             this.EditSpecAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.EditSpecAddrID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EditSpecAddrID.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 582);
+            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 315);
             this.EditSpecAddrID.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.EditSpecAddrID.Name = "EditSpecAddrID";
             this.EditSpecAddrID.Size = new System.Drawing.Size(256, 71);
@@ -611,26 +662,12 @@
             this.EditSpecAddrID.UseVisualStyleBackColor = true;
             this.EditSpecAddrID.Click += new System.EventHandler(this.EditSpecAddrID_Click);
             // 
-            // ConvParam
-            // 
-            this.ConvParam.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ConvParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ConvParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConvParam.Location = new System.Drawing.Point(20, 314);
-            this.ConvParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.ConvParam.Name = "ConvParam";
-            this.ConvParam.Size = new System.Drawing.Size(256, 69);
-            this.ConvParam.TabIndex = 36;
-            this.ConvParam.Text = "List All Parameters";
-            this.ConvParam.UseVisualStyleBackColor = true;
-            this.ConvParam.Click += new System.EventHandler(this.ConvParam_Click);
-            // 
             // SpecAddr
             // 
             this.SpecAddr.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.SpecAddr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SpecAddr.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpecAddr.Location = new System.Drawing.Point(20, 229);
+            this.SpecAddr.Location = new System.Drawing.Point(20, 232);
             this.SpecAddr.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.SpecAddr.Name = "SpecAddr";
             this.SpecAddr.Size = new System.Drawing.Size(256, 70);
@@ -646,7 +683,7 @@
             this.btnAll_Blink.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.btnAll_Blink.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAll_Blink.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAll_Blink.Location = new System.Drawing.Point(20, 64);
+            this.btnAll_Blink.Location = new System.Drawing.Point(20, 413);
             this.btnAll_Blink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_Blink.Name = "btnAll_Blink";
             this.btnAll_Blink.Size = new System.Drawing.Size(256, 62);
@@ -654,21 +691,6 @@
             this.btnAll_Blink.Text = "Identify All Cards";
             this.btnAll_Blink.UseVisualStyleBackColor = true;
             this.btnAll_Blink.Click += new System.EventHandler(this.btnAll_Blink_Click);
-            // 
-            // btnAll_StopBlink
-            // 
-            this.btnAll_StopBlink.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.btnAll_StopBlink.AutoSize = true;
-            this.btnAll_StopBlink.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnAll_StopBlink.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAll_StopBlink.Location = new System.Drawing.Point(20, 140);
-            this.btnAll_StopBlink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.btnAll_StopBlink.Name = "btnAll_StopBlink";
-            this.btnAll_StopBlink.Size = new System.Drawing.Size(256, 72);
-            this.btnAll_StopBlink.TabIndex = 33;
-            this.btnAll_StopBlink.Text = "Stop Identifying\r\nAll Cards";
-            this.btnAll_StopBlink.UseVisualStyleBackColor = true;
-            this.btnAll_StopBlink.Click += new System.EventHandler(this.btnAll_StopBlink_Click);
             // 
             // panel9
             // 
@@ -696,20 +718,6 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(1348, 90);
             this.panel2.TabIndex = 0;
-            // 
-            // ListSpecParam
-            // 
-            this.ListSpecParam.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ListSpecParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ListSpecParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ListSpecParam.Location = new System.Drawing.Point(20, 396);
-            this.ListSpecParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
-            this.ListSpecParam.Name = "ListSpecParam";
-            this.ListSpecParam.Size = new System.Drawing.Size(256, 81);
-            this.ListSpecParam.TabIndex = 38;
-            this.ListSpecParam.Text = "List One Card Parameters";
-            this.ListSpecParam.UseVisualStyleBackColor = true;
-            this.ListSpecParam.Click += new System.EventHandler(this.ListSpecParam_Click);
             // 
             // MainForm
             // 
@@ -788,7 +796,6 @@
         private System.Windows.Forms.Button ConvParam;
         private System.Windows.Forms.Button SpecAddr;
         private System.Windows.Forms.Button btnAll_Blink;
-        private System.Windows.Forms.Button btnAll_StopBlink;
         private System.Windows.Forms.Button IdtIDLed;
         private System.Windows.Forms.Panel panel10;
         private System.Windows.Forms.Button Refresh;
@@ -800,6 +807,8 @@
         private System.Windows.Forms.Timer confirmButtonTimer;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Button ListSpecParam;
+        private System.Windows.Forms.Button ImpTxtSetting;
+        private System.Windows.Forms.Label label12;
     }
 }
 
