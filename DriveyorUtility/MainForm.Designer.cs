@@ -128,12 +128,12 @@
             // 
             this.Refresh.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Refresh.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refresh.Location = new System.Drawing.Point(1052, 43);
+            this.Refresh.Location = new System.Drawing.Point(1050, 37);
             this.Refresh.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Refresh.Name = "Refresh";
-            this.Refresh.Size = new System.Drawing.Size(123, 52);
+            this.Refresh.Size = new System.Drawing.Size(152, 52);
             this.Refresh.TabIndex = 23;
-            this.Refresh.Text = "Refresh";
+            this.Refresh.Text = "Clear Data";
             this.Refresh.UseVisualStyleBackColor = true;
             this.Refresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
@@ -441,9 +441,9 @@
             this.label9.Location = new System.Drawing.Point(15, 127);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(116, 30);
+            this.label9.Size = new System.Drawing.Size(204, 38);
             this.label9.TabIndex = 33;
-            this.label9.Text = "Stop Pos:";
+            this.label9.Text = "Stop Position:";
             // 
             // label8
             // 
@@ -463,9 +463,9 @@
             this.label7.Location = new System.Drawing.Point(12, 231);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(153, 60);
+            this.label7.Size = new System.Drawing.Size(181, 75);
             this.label7.TabIndex = 31;
-            this.label7.Text = "Over/Under\r\nTravel Steps:";
+            this.label7.Text = "Over/Under\r\nTravel Size:";
             // 
             // label2
             // 
@@ -474,9 +474,9 @@
             this.label2.Location = new System.Drawing.Point(15, 65);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(131, 30);
+            this.label2.Size = new System.Drawing.Size(210, 38);
             this.label2.TabIndex = 30;
-            this.label2.Text = "Pallet Len:";
+            this.label2.Text = "Pallet Length:";
             // 
             // txtPalletLen
             // 
@@ -537,7 +537,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(656, 38);
+            this.label12.Location = new System.Drawing.Point(655, 36);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(235, 30);
             this.label12.TabIndex = 45;
@@ -546,13 +546,14 @@
             // ImpTxtSetting
             // 
             this.ImpTxtSetting.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.ImpTxtSetting.Location = new System.Drawing.Point(898, 34);
+            this.ImpTxtSetting.BackColor = System.Drawing.SystemColors.Window;
+            this.ImpTxtSetting.Location = new System.Drawing.Point(898, 33);
             this.ImpTxtSetting.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.ImpTxtSetting.Name = "ImpTxtSetting";
             this.ImpTxtSetting.Size = new System.Drawing.Size(127, 37);
             this.ImpTxtSetting.TabIndex = 44;
             this.ImpTxtSetting.Text = "Import";
-            this.ImpTxtSetting.UseVisualStyleBackColor = true;
+            this.ImpTxtSetting.UseVisualStyleBackColor = false;
             this.ImpTxtSetting.Click += new System.EventHandler(this.ImpTxtSetting_Click);
             // 
             // cbBoxAddrID

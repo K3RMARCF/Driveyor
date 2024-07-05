@@ -17,7 +17,7 @@ INH_INT: Inhibit Internal
 Motor Current: Motor Current
 Motor Hold Current: Motor Hold Current
 Motor Microstepping Size: Motor Micro Size
-Motor Run Speed: Motor Run Speed
+Motor Run Speed: Motor Speed
 Over/Under Travel Speed: Over/Under Travel Speed
 Motor Acceleration: Motor Acceleration
 Motor Direction: Motor Direction

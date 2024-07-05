@@ -137,7 +137,7 @@ namespace DriveyorUtility
                     Name = "cbSelectID",
                     Location = new Point(420, 25), // Adjust location as needed
                     DropDownStyle = ComboBoxStyle.DropDownList,
-                    Width = 65 // Adjust width as needed
+                    Width = 70 // Adjust width as needed
                 };
 
                 // Add items to the ComboBox from storedIDs
@@ -312,9 +312,6 @@ namespace DriveyorUtility
             ClearComboBox();
             ClearTextFields();
             storedIDs.Clear();
-            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosendla, 0, bytetosendla.Length);
-            System.Diagnostics.Debug.WriteLine("LA command sent.");
         }
 
         private void ClearAllData()
@@ -461,8 +458,6 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Serial port is not open.");
             }
         }
-        
-
         private ConveyorParameters UpdateConveyorParameters(ConveyorParameters current, ConveyorParameters update)
         {
             if (current == null) current = new ConveyorParameters();
@@ -714,7 +709,6 @@ namespace DriveyorUtility
                 }));
 
                 // Unsubscribe from the event to avoid multiple triggers
-                
             }
             else if (indata.Contains("no enum"))
             {
@@ -726,8 +720,7 @@ namespace DriveyorUtility
                     MessageBox.Show("Address setting failed: No enumeration.");
                 }));
 
-                // Unsubscribe from the event to avoid multiple triggers
-                
+                // Unsubscribe from the event to avoid multiple triggers 
             }
             else
             {
@@ -880,6 +873,7 @@ namespace DriveyorUtility
                 ParameterDisplayForm parameterDisplayForm = new ParameterDisplayForm(messageBuilder.ToString());
                 parameterDisplayForm.ShowDialog();
             }
+
             else
             {
                 MessageBox.Show($"No parameters found for ID: {id}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1020,8 +1014,12 @@ namespace DriveyorUtility
                 Console.WriteLine("0000$se");
 
                 // Clear data after sending all commands to ensure display is updated
-                Rf();//This method itself has a send 0000$la command inside               
-                
+                Rf();
+
+                byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+                sp.Write(bytetosendla, 0, bytetosendla.Length);
+                System.Diagnostics.Debug.WriteLine("LA command sent.");
+
             }
             else
             {
@@ -1254,7 +1252,6 @@ namespace DriveyorUtility
                 MessageBox.Show($"Parameters for card {selectedID} changed.");
             }
         }
-
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
@@ -1405,7 +1402,6 @@ namespace DriveyorUtility
 
             return isValid;
         }
-
         private void ImpTxtSetting_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -1426,7 +1422,6 @@ namespace DriveyorUtility
                 }
             }
         }
-
         private void PopulateFieldsFromText(string text)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
