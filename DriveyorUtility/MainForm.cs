@@ -194,7 +194,16 @@ namespace DriveyorUtility
                     {
                         // Send the 0000$la command only if IDs are not loaded
                         await Task.Delay(1000);
-                        SendLACommand();
+                        if (sp != null && sp.IsOpen)
+                        {
+                            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+                            sp.Write(bytetosendla, 0, bytetosendla.Length);
+                            System.Diagnostics.Debug.WriteLine("LA command sent.");
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("Serial port is not open.");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -270,19 +279,6 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine("Serial port is not open.");
             }
         }
-        private void SendLACommand()
-        {
-            if (sp != null && sp.IsOpen)
-            {
-                byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
-                sp.Write(bytetosendla, 0, bytetosendla.Length);
-                System.Diagnostics.Debug.WriteLine("LA command sent.");
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("Serial port is not open.");
-            }
-        }
         private void Refresh_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
@@ -295,7 +291,6 @@ namespace DriveyorUtility
             cbBoxAddrID.Items.Clear();
             cbBoxAddrID.Text = string.Empty; // Optionally clear the selected text
         }
-        
         private bool CheckSerialPortConnection()
         {
             if (sp == null)
@@ -305,13 +300,12 @@ namespace DriveyorUtility
             }
             return true;
         }
-
         private void Rf() //clears storedID as well
         {
             ClearAllData();
             ClearComboBox();
             ClearTextFields();
-            storedIDs.Clear();
+            
         }
 
         private void ClearAllData()
@@ -338,14 +332,6 @@ namespace DriveyorUtility
             txtMotorCurrent.Clear();
             txtMotorSpeed.Clear();
             txtTravelSpeed.Clear();
-        }
-       
-        private void SendCommand(string hexAddress, string command)
-        {
-            string fullCommand = $"{hexAddress}${command}\r\n"; // Adjust the format as needed
-            byte[] bytetosend = Encoding.ASCII.GetBytes(fullCommand);
-            sp.Write(bytetosend, 0, bytetosend.Length);
-            System.Diagnostics.Debug.WriteLine($"Command sent: {BitConverter.ToString(bytetosend)}");
         }
         private string ConvertToHex(string input)
         {
@@ -762,7 +748,10 @@ namespace DriveyorUtility
             {
                 string hexAddress = ConvertToHex(userInput);
                 Console.WriteLine(hexAddress);
-                SendCommand(hexAddress, "si"); // Example command
+                string fullCommand = $"{hexAddress}$si\r\n"; // Adjust the format as needed
+                byte[] bytetosend = Encoding.ASCII.GetBytes(fullCommand);
+                sp.Write(bytetosend, 0, bytetosend.Length);
+                System.Diagnostics.Debug.WriteLine($"Command sent: {BitConverter.ToString(bytetosend)}");
                 var result = MessageBox.Show("Is the onboard LED D5 blinking green", "Driveyor Utility", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
@@ -1015,6 +1004,7 @@ namespace DriveyorUtility
 
                 // Clear data after sending all commands to ensure display is updated
                 Rf();
+                storedIDs.Clear();
 
                 byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                 sp.Write(bytetosendla, 0, bytetosendla.Length);
@@ -1061,7 +1051,11 @@ namespace DriveyorUtility
             {
                 storedIDs.Remove(formattedCurrentAddress);
             }
-
+            if (processedIDs.Contains(formattedCurrentAddress))
+            {
+                processedIDs.Remove(formattedCurrentAddress);
+            }
+            
             // Clear existing data
             ClearData();
 
