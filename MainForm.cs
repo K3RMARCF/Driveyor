@@ -1432,14 +1432,14 @@ namespace DriveyorUtility
             }
 
             if (parameters.ContainsKey("Pallet Len")) txtPalletLen.Text = parameters["Pallet Len"];
-            if (parameters.ContainsKey("Stop Pos")) txtStopPos.Text = parameters["Stop Pos"];
+            if (parameters.ContainsKey("Stop Position")) txtStopPos.Text = parameters["Stop Position"];
             if (parameters.ContainsKey("Gap Size")) txtGapSize.Text = parameters["Gap Size"];
             if (parameters.ContainsKey("Over/Under Travel Size")) txtTravelSteps.Text = parameters["Over/Under Travel Size"];
             if (parameters.ContainsKey("Direction")) CmbBoxDir.SelectedIndex = int.Parse(parameters["Direction"]);
-            if (parameters.ContainsKey("Double-sided")) CmbBoxDbSide.SelectedIndex = int.Parse(parameters["Double-sided"]);
+            if (parameters.ContainsKey("Double Sided")) CmbBoxDbSide.SelectedIndex = int.Parse(parameters["Double Sided"]);
             if (parameters.ContainsKey("Travel Correction")) CmbBoxTravCorr.SelectedIndex = int.Parse(parameters["Travel Correction"]);
             if (parameters.ContainsKey("Motor Current")) txtMotorCurrent.Text = parameters["Motor Current"];
-            if (parameters.ContainsKey("Motor Speed")) txtMotorSpeed.Text = parameters["Motor Speed"];
+            if (parameters.ContainsKey("Motor Run Speed")) txtMotorSpeed.Text = parameters["Motor Run Speed"];
             if (parameters.ContainsKey("Over/Under Travel Speed")) txtTravelSpeed.Text = parameters["Over/Under Travel Speed"];
         }
 

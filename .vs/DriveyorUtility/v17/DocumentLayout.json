@@ -1,0 +1,60 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{9B67AA5E-1458-4E83-891F-B4D4408C5888}|DriveyorUtility\\DriveyorUtility.csproj|c:\\users\\k3rma\\source\\repos\\driveyorutility_v1\\driveyorutility\\driveyorutility\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9B67AA5E-1458-4E83-891F-B4D4408C5888}|DriveyorUtility\\DriveyorUtility.csproj|solutionrelative:driveyorutility\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9B67AA5E-1458-4E83-891F-B4D4408C5888}|DriveyorUtility\\DriveyorUtility.csproj|C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\driveyorutility\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{9B67AA5E-1458-4E83-891F-B4D4408C5888}|DriveyorUtility\\DriveyorUtility.csproj|solutionrelative:driveyorutility\\mainform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:130:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainForm.cs",
+              "DocumentMoniker": "C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\DriveyorUtility\\MainForm.cs",
+              "RelativeDocumentMoniker": "DriveyorUtility\\MainForm.cs",
+              "ToolTip": "C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\DriveyorUtility\\MainForm.cs",
+              "RelativeToolTip": "DriveyorUtility\\MainForm.cs",
+              "ViewState": "AQIAAPQDAAAAAAAAAAAswDMBAAAMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-05T04:18:09.503Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainForm.cs [Design]",
+              "DocumentMoniker": "C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\DriveyorUtility\\MainForm.cs",
+              "RelativeDocumentMoniker": "DriveyorUtility\\MainForm.cs",
+              "ToolTip": "C:\\Users\\k3rma\\source\\repos\\DriveyorUtility_V1\\DriveyorUtility\\DriveyorUtility\\MainForm.cs [Design]",
+              "RelativeToolTip": "DriveyorUtility\\MainForm.cs [Design]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-05T04:18:02.634Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

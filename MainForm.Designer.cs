@@ -345,7 +345,7 @@
             this.CfmParamChange.Name = "CfmParamChange";
             this.CfmParamChange.Size = new System.Drawing.Size(419, 47);
             this.CfmParamChange.TabIndex = 21;
-            this.CfmParamChange.Text = "Program";
+            this.CfmParamChange.Text = "Execute";
             this.CfmParamChange.UseVisualStyleBackColor = true;
             // 
             // groupBox1
@@ -441,7 +441,7 @@
             this.label9.Location = new System.Drawing.Point(15, 127);
             this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(204, 38);
+            this.label9.Size = new System.Drawing.Size(163, 30);
             this.label9.TabIndex = 33;
             this.label9.Text = "Stop Position:";
             // 
@@ -463,7 +463,7 @@
             this.label7.Location = new System.Drawing.Point(12, 231);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(181, 75);
+            this.label7.Size = new System.Drawing.Size(145, 60);
             this.label7.TabIndex = 31;
             this.label7.Text = "Over/Under\r\nTravel Size:";
             // 
@@ -474,7 +474,7 @@
             this.label2.Location = new System.Drawing.Point(15, 65);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(210, 38);
+            this.label2.Size = new System.Drawing.Size(168, 30);
             this.label2.TabIndex = 30;
             this.label2.Text = "Pallet Length:";
             // 

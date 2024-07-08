@@ -1,0 +1,23 @@
+ID: 0002
+Pallet Len: 800
+Stop Position: 350
+Gap Size: 100
+Over/Under Travel Size: 400
+Timeout Steps: 3200
+Direction: 0
+Double Sided: 0
+Travel Correction: 1
+Rev External: 0
+Rev Internal: 0
+Inh External: 0
+Inh Internal: 0
+Motor Current: 14
+Motor Hold Current: 1
+Motor Micro Size: 0
+Motor Run Speed: 700
+Over/Under Travel Speed: 300
+Motor Acceleration: 3300
+Motor Direction: 0
+Motor Speed Profile: 2
+Motor Status: OK
+Temperature: 40.7
