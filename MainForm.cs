@@ -199,6 +199,8 @@ namespace DriveyorUtility
                             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                             sp.Write(bytetosendla, 0, bytetosendla.Length);
                             System.Diagnostics.Debug.WriteLine("LA command sent.");
+
+                            MessageBox.Show("Please wait for onboard LED to stop blinking orange, red means need to set an address");
                         }
                         else
                         {
@@ -1140,6 +1142,9 @@ namespace DriveyorUtility
                     confirmButtonTimer.Stop();
                     return;
                 }
+
+                ShowStatusLabel("Updating parameters...Please wait for the popup message");
+
                 string[] commands = new string[]
                 {
                     $"0000$cl{txtPalletLen.Text}\r\n",
@@ -1176,6 +1181,8 @@ namespace DriveyorUtility
                     Thread.Sleep(800); // Add a 500 milliseconds delay between commands
                 }
                 MessageBox.Show($"Parameters for all cards changed.");
+
+                HideStatusLabel();
             }
         }
 
@@ -1207,7 +1214,7 @@ namespace DriveyorUtility
                 }
 
                 string selectedID = cbSelectID.SelectedItem.ToString();
-
+                ShowStatusLabel("Updating parameters...Please wait for the popup message");
                 string[] commands = new string[]
                 {
                     $"{selectedID}$cl{txtPalletLen.Text}\r\n",
@@ -1244,6 +1251,8 @@ namespace DriveyorUtility
                     Thread.Sleep(800); // Add a 1000 milliseconds delay between commands
                 }
                 MessageBox.Show($"Parameters for card {selectedID} changed.");
+
+                HideStatusLabel();
             }
         }
         private void cbBoxAddrID_SelectedIndexChanged(object sender, EventArgs e)
@@ -1431,7 +1440,7 @@ namespace DriveyorUtility
                 }
             }
 
-            if (parameters.ContainsKey("Pallet Len")) txtPalletLen.Text = parameters["Pallet Len"];
+            if (parameters.ContainsKey("Pallet Length")) txtPalletLen.Text = parameters["Pallet Length"];
             if (parameters.ContainsKey("Stop Position")) txtStopPos.Text = parameters["Stop Position"];
             if (parameters.ContainsKey("Gap Size")) txtGapSize.Text = parameters["Gap Size"];
             if (parameters.ContainsKey("Over/Under Travel Size")) txtTravelSteps.Text = parameters["Over/Under Travel Size"];
@@ -1439,10 +1448,40 @@ namespace DriveyorUtility
             if (parameters.ContainsKey("Double Sided")) CmbBoxDbSide.SelectedIndex = int.Parse(parameters["Double Sided"]);
             if (parameters.ContainsKey("Travel Correction")) CmbBoxTravCorr.SelectedIndex = int.Parse(parameters["Travel Correction"]);
             if (parameters.ContainsKey("Motor Current")) txtMotorCurrent.Text = parameters["Motor Current"];
-            if (parameters.ContainsKey("Motor Run Speed")) txtMotorSpeed.Text = parameters["Motor Run Speed"];
+            if (parameters.ContainsKey("Motor Speed")) txtMotorSpeed.Text = parameters["Motor Speed"];
             if (parameters.ContainsKey("Over/Under Travel Speed")) txtTravelSpeed.Text = parameters["Over/Under Travel Speed"];
         }
+        private Label statusLabel;
 
+        private void ShowStatusLabel(string message)
+        {
+            if (statusLabel == null)
+            {
+                statusLabel = new Label
+                {
+                    Location = new Point(10, this.ClientSize.Height - 50), // Adjust location as needed
+                    AutoSize = true,
+                    Font = new Font("Arial", 10, FontStyle.Bold),
+                    ForeColor = Color.Red,
+                    Text = message
+                };
+                this.Controls.Add(statusLabel);
+                statusLabel.BringToFront();
+            }
+            else
+            {
+                statusLabel.Text = message;
+                statusLabel.Visible = true;
+            }
+        }
+
+        private void HideStatusLabel()
+        {
+            if (statusLabel != null)
+            {
+                statusLabel.Visible = false;
+            }
+        }
     }
 }
 

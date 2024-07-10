@@ -49,6 +49,14 @@ namespace DriveyorUtility
         {
             // Get the application's base directory
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string paramSettingDirectory = Path.Combine(baseDirectory, "ParamSetting");
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(paramSettingDirectory))
+            {
+                Directory.CreateDirectory(paramSettingDirectory);
+            }
+
             string addrID = ExtractAddrIDFromText(this.textBox.Text); // Method to extract AddrID from the text
 
             if (string.IsNullOrEmpty(addrID))
@@ -58,7 +66,7 @@ namespace DriveyorUtility
             }
 
             string fileName = $"ParamSetting__{addrID}.txt";
-            string filePath = Path.Combine(baseDirectory, fileName);
+            string filePath = Path.Combine(paramSettingDirectory, fileName);
 
             if (File.Exists(filePath))
             {
@@ -82,6 +90,7 @@ namespace DriveyorUtility
                 MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private string ExtractAddrIDFromText(string text)
         {
