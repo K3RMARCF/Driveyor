@@ -193,7 +193,7 @@ namespace DriveyorUtility
                     if (!idsLoaded)
                     {
                         // Send the 0000$la command only if IDs are not loaded
-                        await Task.Delay(1000);
+                        await Task.Delay(500);
                         if (sp != null && sp.IsOpen)
                         {
                             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
@@ -1127,9 +1127,18 @@ namespace DriveyorUtility
                 isButtonClickProcessed = true;
                 CfmParamChange.Enabled = false;
                 confirmButtonTimer.Start();
-                if (cbBoxAddrID.SelectedItem == null)
-                {
-                    MessageBox.Show("Please select a valid card address ID from the dropdown.", "No Address Selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (string.IsNullOrWhiteSpace(txtPalletLen.Text) ||
+                    string.IsNullOrWhiteSpace(txtStopPos.Text) ||
+                    string.IsNullOrWhiteSpace(txtGapSize.Text) ||
+                    string.IsNullOrWhiteSpace(txtTravelSteps.Text) ||
+                    string.IsNullOrWhiteSpace(txtMotorCurrent.Text) ||
+                    string.IsNullOrWhiteSpace(txtMotorSpeed.Text) ||
+                    string.IsNullOrWhiteSpace(txtTravelSpeed.Text) ||
+                    CmbBoxDir.SelectedIndex == -1 ||
+                    CmbBoxDbSide.SelectedIndex == -1 ||
+                    CmbBoxTravCorr.SelectedIndex == -1)
+                    {
+                    MessageBox.Show("All fields must be filled out.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     isButtonClickProcessed = false;
                     CfmParamChange.Enabled = true;
                     confirmButtonTimer.Stop();
@@ -1204,7 +1213,24 @@ namespace DriveyorUtility
                     confirmButtonTimer.Stop();
                     return;
                 }
-
+                // Check if any required text fields or combo boxes are empty
+                if (string.IsNullOrWhiteSpace(txtPalletLen.Text) ||
+                    string.IsNullOrWhiteSpace(txtStopPos.Text) ||
+                    string.IsNullOrWhiteSpace(txtGapSize.Text) ||
+                    string.IsNullOrWhiteSpace(txtTravelSteps.Text) ||
+                    string.IsNullOrWhiteSpace(txtMotorCurrent.Text) ||
+                    string.IsNullOrWhiteSpace(txtMotorSpeed.Text) ||
+                    string.IsNullOrWhiteSpace(txtTravelSpeed.Text) ||
+                    CmbBoxDir.SelectedIndex == -1 ||
+                    CmbBoxDbSide.SelectedIndex == -1 ||
+                    CmbBoxTravCorr.SelectedIndex == -1)
+                {
+                    MessageBox.Show("All fields must be filled out.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    isButtonClickProcessed = false;
+                    CfmParamChange.Enabled = true;
+                    confirmButtonTimer.Stop();
+                    return;
+                }
                 if (!ValidateMotorParameters())
                 {
                     isButtonClickProcessed = false;

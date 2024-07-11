@@ -1,6 +1,6 @@
-ID: 002a
-Pallet Length: 1000
-Stop Position: 500
+ID: 001a
+Pallet Length: 700
+Stop Position: 350
 Gap Size: 100
 Over/Under Travel Size: 400
 Timeout Steps: 2800
@@ -15,9 +15,9 @@ Motor Current: 10
 Motor Hold Current: 1
 Motor Micro Size: 0
 Motor Speed: 600
-Over/Under Travel Speed: 300
+Over/Under Travel Speed: 150
 Motor Acceleration: 2425
 Motor Direction: 0
 Motor Speed Profile: 2
 Motor Status: OK
-Temperature: 40.5
+Temperature: 21.4
