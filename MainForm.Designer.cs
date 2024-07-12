@@ -71,6 +71,9 @@
             this.ImpTxtSetting = new System.Windows.Forms.Button();
             this.cbBoxAddrID = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.MvRight = new System.Windows.Forms.Button();
+            this.MvLeft = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
             this.panel8 = new System.Windows.Forms.Panel();
             this.ConvParam = new System.Windows.Forms.Button();
@@ -82,6 +85,8 @@
             this.panel9 = new System.Windows.Forms.Panel();
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
+            this.TestTimer = new System.Windows.Forms.Timer(this.components);
+            this.panel11 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -93,6 +98,7 @@
             this.groupBox1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel7.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel8.SuspendLayout();
             this.SuspendLayout();
@@ -112,6 +118,7 @@
             // panel10
             // 
             this.panel10.BackColor = System.Drawing.Color.Transparent;
+            this.panel10.Controls.Add(this.panel11);
             this.panel10.Controls.Add(this.Refresh);
             this.panel10.Controls.Add(this.lblMsg2);
             this.panel10.Controls.Add(this.label1);
@@ -142,7 +149,7 @@
             this.lblMsg2.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.lblMsg2.AutoSize = true;
             this.lblMsg2.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblMsg2.Location = new System.Drawing.Point(560, 49);
+            this.lblMsg2.Location = new System.Drawing.Point(685, 49);
             this.lblMsg2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblMsg2.Name = "lblMsg2";
             this.lblMsg2.Size = new System.Drawing.Size(213, 30);
@@ -154,7 +161,7 @@
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(27, 49);
+            this.label1.Location = new System.Drawing.Point(163, 49);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(139, 30);
@@ -166,7 +173,7 @@
             this.btnConnect.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.btnConnect.AutoSize = true;
             this.btnConnect.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnConnect.Location = new System.Drawing.Point(379, 37);
+            this.btnConnect.Location = new System.Drawing.Point(504, 37);
             this.btnConnect.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(152, 52);
@@ -180,7 +187,7 @@
             this.comB_COM_Port.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.comB_COM_Port.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.comB_COM_Port.FormattingEnabled = true;
-            this.comB_COM_Port.Location = new System.Drawing.Point(189, 46);
+            this.comB_COM_Port.Location = new System.Drawing.Point(310, 46);
             this.comB_COM_Port.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.comB_COM_Port.Name = "comB_COM_Port";
             this.comB_COM_Port.Size = new System.Drawing.Size(160, 37);
@@ -194,7 +201,7 @@
             this.panel3.Location = new System.Drawing.Point(0, 132);
             this.panel3.Margin = new System.Windows.Forms.Padding(4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(1348, 675);
+            this.panel3.Size = new System.Drawing.Size(1348, 700);
             this.panel3.TabIndex = 1;
             // 
             // tabControl1
@@ -202,13 +209,14 @@
             this.tabControl1.Appearance = System.Windows.Forms.TabAppearance.Buttons;
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1052, 675);
+            this.tabControl1.Size = new System.Drawing.Size(1052, 700);
             this.tabControl1.TabIndex = 1;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -221,9 +229,9 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage1.Size = new System.Drawing.Size(1044, 630);
+            this.tabPage1.Size = new System.Drawing.Size(1044, 655);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Read Data";
+            this.tabPage1.Text = "Display Read Data";
             // 
             // panel12
             // 
@@ -232,7 +240,7 @@
             this.panel12.Location = new System.Drawing.Point(4, 4);
             this.panel12.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel12.Name = "panel12";
-            this.panel12.Size = new System.Drawing.Size(1032, 618);
+            this.panel12.Size = new System.Drawing.Size(1032, 643);
             this.panel12.TabIndex = 14;
             this.panel12.Paint += new System.Windows.Forms.PaintEventHandler(this.panel12_Paint_1);
             // 
@@ -245,7 +253,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage2.Size = new System.Drawing.Size(1044, 630);
+            this.tabPage2.Size = new System.Drawing.Size(1044, 655);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Parameter Settings";
             // 
@@ -258,7 +266,7 @@
             this.panel6.Location = new System.Drawing.Point(4, 104);
             this.panel6.Margin = new System.Windows.Forms.Padding(4);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1036, 522);
+            this.panel6.Size = new System.Drawing.Size(1036, 547);
             this.panel6.TabIndex = 22;
             // 
             // groupBox2
@@ -275,7 +283,7 @@
             this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox2.Size = new System.Drawing.Size(515, 518);
+            this.groupBox2.Size = new System.Drawing.Size(515, 543);
             this.groupBox2.TabIndex = 26;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Motor Card Settings";
@@ -340,7 +348,7 @@
             // CfmParamChange
             // 
             this.CfmParamChange.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CfmParamChange.Location = new System.Drawing.Point(35, 425);
+            this.CfmParamChange.Location = new System.Drawing.Point(35, 438);
             this.CfmParamChange.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.CfmParamChange.Name = "CfmParamChange";
             this.CfmParamChange.Size = new System.Drawing.Size(419, 47);
@@ -369,7 +377,7 @@
             this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
-            this.groupBox1.Size = new System.Drawing.Size(515, 518);
+            this.groupBox1.Size = new System.Drawing.Size(515, 543);
             this.groupBox1.TabIndex = 25;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Conveyor Card Settings";
@@ -578,6 +586,38 @@
             this.label3.TabIndex = 20;
             this.label3.Text = "Read From Card #:";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.MvRight);
+            this.tabPage3.Controls.Add(this.MvLeft);
+            this.tabPage3.Location = new System.Drawing.Point(4, 41);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1044, 655);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Test Mode";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // MvRight
+            // 
+            this.MvRight.Location = new System.Drawing.Point(683, 198);
+            this.MvRight.Name = "MvRight";
+            this.MvRight.Size = new System.Drawing.Size(181, 78);
+            this.MvRight.TabIndex = 1;
+            this.MvRight.Text = "Move Right";
+            this.MvRight.UseVisualStyleBackColor = true;
+            this.MvRight.Click += new System.EventHandler(this.MvRight_Click);
+            // 
+            // MvLeft
+            // 
+            this.MvLeft.Location = new System.Drawing.Point(165, 198);
+            this.MvLeft.Name = "MvLeft";
+            this.MvLeft.Size = new System.Drawing.Size(181, 78);
+            this.MvLeft.TabIndex = 0;
+            this.MvLeft.Text = "Move Left";
+            this.MvLeft.UseVisualStyleBackColor = true;
+            this.MvLeft.Click += new System.EventHandler(this.MvLeft_Click);
+            // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.Linen;
@@ -586,7 +626,7 @@
             this.panel4.Location = new System.Drawing.Point(1052, 0);
             this.panel4.Margin = new System.Windows.Forms.Padding(4);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(296, 675);
+            this.panel4.Size = new System.Drawing.Size(296, 700);
             this.panel4.TabIndex = 0;
             // 
             // panel8
@@ -604,7 +644,7 @@
             this.panel8.Location = new System.Drawing.Point(0, 0);
             this.panel8.Margin = new System.Windows.Forms.Padding(4);
             this.panel8.Name = "panel8";
-            this.panel8.Size = new System.Drawing.Size(296, 667);
+            this.panel8.Size = new System.Drawing.Size(296, 700);
             this.panel8.TabIndex = 2;
             // 
             // ConvParam
@@ -612,7 +652,7 @@
             this.ConvParam.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.ConvParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ConvParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ConvParam.Location = new System.Drawing.Point(20, 52);
+            this.ConvParam.Location = new System.Drawing.Point(20, 69);
             this.ConvParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.ConvParam.Name = "ConvParam";
             this.ConvParam.Size = new System.Drawing.Size(256, 72);
@@ -626,7 +666,7 @@
             this.ListSpecParam.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.ListSpecParam.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ListSpecParam.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ListSpecParam.Location = new System.Drawing.Point(20, 130);
+            this.ListSpecParam.Location = new System.Drawing.Point(20, 147);
             this.ListSpecParam.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.ListSpecParam.Name = "ListSpecParam";
             this.ListSpecParam.Size = new System.Drawing.Size(256, 81);
@@ -640,7 +680,7 @@
             this.IdtIDLed.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.IdtIDLed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.IdtIDLed.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.IdtIDLed.Location = new System.Drawing.Point(20, 479);
+            this.IdtIDLed.Location = new System.Drawing.Point(20, 496);
             this.IdtIDLed.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.IdtIDLed.Name = "IdtIDLed";
             this.IdtIDLed.Size = new System.Drawing.Size(256, 76);
@@ -654,7 +694,7 @@
             this.EditSpecAddrID.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.EditSpecAddrID.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.EditSpecAddrID.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 315);
+            this.EditSpecAddrID.Location = new System.Drawing.Point(20, 332);
             this.EditSpecAddrID.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.EditSpecAddrID.Name = "EditSpecAddrID";
             this.EditSpecAddrID.Size = new System.Drawing.Size(256, 71);
@@ -668,7 +708,7 @@
             this.SpecAddr.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.SpecAddr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SpecAddr.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpecAddr.Location = new System.Drawing.Point(20, 232);
+            this.SpecAddr.Location = new System.Drawing.Point(20, 249);
             this.SpecAddr.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.SpecAddr.Name = "SpecAddr";
             this.SpecAddr.Size = new System.Drawing.Size(256, 70);
@@ -684,7 +724,7 @@
             this.btnAll_Blink.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.btnAll_Blink.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnAll_Blink.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnAll_Blink.Location = new System.Drawing.Point(20, 413);
+            this.btnAll_Blink.Location = new System.Drawing.Point(20, 430);
             this.btnAll_Blink.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.btnAll_Blink.Name = "btnAll_Blink";
             this.btnAll_Blink.Size = new System.Drawing.Size(256, 62);
@@ -714,11 +754,23 @@
             this.panel2.BackColor = System.Drawing.Color.SeaShell;
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 807);
+            this.panel2.Location = new System.Drawing.Point(0, 832);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1348, 90);
+            this.panel2.Size = new System.Drawing.Size(1348, 65);
             this.panel2.TabIndex = 0;
+            // 
+            // TestTimer
+            // 
+            this.TestTimer.Interval = 10000;
+            this.TestTimer.Tick += new System.EventHandler(this.TestTimer_Tick);
+            // 
+            // panel11
+            // 
+            this.panel11.Location = new System.Drawing.Point(10, 10);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(106, 100);
+            this.panel11.TabIndex = 24;
             // 
             // MainForm
             // 
@@ -748,6 +800,7 @@
             this.panel5.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
@@ -810,6 +863,11 @@
         private System.Windows.Forms.Button ListSpecParam;
         private System.Windows.Forms.Button ImpTxtSetting;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button MvRight;
+        private System.Windows.Forms.Button MvLeft;
+        private System.Windows.Forms.Timer TestTimer;
+        private System.Windows.Forms.Panel panel11;
     }
 }
 

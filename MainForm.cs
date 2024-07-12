@@ -26,6 +26,7 @@ namespace DriveyorUtility
             InitializeComponent();
             cbBoxAddrID.SelectedIndexChanged += cbBoxAddrID_SelectedIndexChanged;
             InitializeComboBoxItems();
+            LoadImageOnStartup();
         }
         
         
@@ -89,6 +90,7 @@ namespace DriveyorUtility
             if (tabControl1.SelectedTab == tabPage2)
             {
                 PopulateComboBoxWithStoredIDs();
+                ClearTextFields();
                 var result = MessageBox.Show("Do you want to change all card parameters?", "Parameter Settings", MessageBoxButtons.YesNo);
 
                 // Always unsubscribe before subscribing to avoid multiple subscriptions
@@ -117,7 +119,32 @@ namespace DriveyorUtility
                 RemoveDynamicControls();
             }
         }
-        private void AddDynamicControls()
+        private void LoadImageOnStartup()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string imagePath = Path.Combine(baseDirectory, "Ascendze logo.png");
+
+            AddImageToPanel(panel11, imagePath);
+        }
+
+        private void AddImageToPanel(Panel panel, string imagePath)
+        {
+            // Create a PictureBox control
+            PictureBox pictureBox = new PictureBox();
+
+            // Set the image to the PictureBox
+            pictureBox.Image = Image.FromFile(imagePath);
+
+            // Set the PictureBox properties
+            pictureBox.SizeMode = PictureBoxSizeMode.Zoom; // Adjust size mode as needed
+            pictureBox.Dock = DockStyle.Fill; // Fill the panel with the image
+
+            // Add the PictureBox to the panel
+            panel.Controls.Clear(); // Clear any existing controls
+            panel.Controls.Add(pictureBox);
+        }
+    
+    private void AddDynamicControls()
         {
             if (panel7.Controls["lblSelectID"] == null && panel7.Controls["cbSelectID"] == null)
             {
@@ -439,7 +466,7 @@ namespace DriveyorUtility
                 System.Diagnostics.Debug.WriteLine($"Command sent: {BitConverter.ToString(command)}");
 
                 // Process the next ID after a short delay to ensure the current command is processed
-                Task.Delay(2000).ContinueWith(t => ProcessNextID());
+                Task.Delay(1000).ContinueWith(t => ProcessNextID());
             }
             else
             {
@@ -1508,6 +1535,36 @@ namespace DriveyorUtility
                 statusLabel.Visible = false;
             }
         }
+
+        private void MvLeft_Click(object sender, EventArgs e)
+        {
+            byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x63, 0x64, 0x31, 0x0D, 0x0A, 0x06 };
+            sp.Write(bytetosend, 0, bytetosend.Length);
+
+            DisableButtons();
+        }
+        private void MvRight_Click(object sender, EventArgs e)
+        {
+            byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x63, 0x64, 0x30, 0x0D, 0x0A, 0x06 };
+            sp.Write(bytetosend, 0, bytetosend.Length);
+
+            DisableButtons();
+        }
+
+        private void TestTimer_Tick(object sender, EventArgs e)
+        {
+            // Re-enable the buttons and stop the timer
+            MvLeft.Enabled = true;
+            MvRight.Enabled = true;
+            TestTimer.Stop();
+        }
+        private void DisableButtons()
+        {
+            MvLeft.Enabled = false;
+            MvRight.Enabled = false;
+            TestTimer.Start();
+        }
+        
     }
 }
 
