@@ -708,7 +708,7 @@
             this.SpecAddr.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.SpecAddr.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SpecAddr.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SpecAddr.Location = new System.Drawing.Point(20, 249);
+            this.SpecAddr.Location = new System.Drawing.Point(20, 258);
             this.SpecAddr.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.SpecAddr.Name = "SpecAddr";
             this.SpecAddr.Size = new System.Drawing.Size(256, 70);

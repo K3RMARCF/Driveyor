@@ -1493,17 +1493,20 @@ namespace DriveyorUtility
                 }
             }
 
-            if (parameters.ContainsKey("Pallet Length")) txtPalletLen.Text = parameters["Pallet Length"];
-            if (parameters.ContainsKey("Stop Position")) txtStopPos.Text = parameters["Stop Position"];
-            if (parameters.ContainsKey("Gap Size")) txtGapSize.Text = parameters["Gap Size"];
-            if (parameters.ContainsKey("Over/Under Travel Size")) txtTravelSteps.Text = parameters["Over/Under Travel Size"];
-            if (parameters.ContainsKey("Direction")) CmbBoxDir.SelectedIndex = int.Parse(parameters["Direction"]);
-            if (parameters.ContainsKey("Double Sided")) CmbBoxDbSide.SelectedIndex = int.Parse(parameters["Double Sided"]);
-            if (parameters.ContainsKey("Travel Correction")) CmbBoxTravCorr.SelectedIndex = int.Parse(parameters["Travel Correction"]);
-            if (parameters.ContainsKey("Motor Current")) txtMotorCurrent.Text = parameters["Motor Current"];
-            if (parameters.ContainsKey("Motor Speed")) txtMotorSpeed.Text = parameters["Motor Speed"];
-            if (parameters.ContainsKey("Over/Under Travel Speed")) txtTravelSpeed.Text = parameters["Over/Under Travel Speed"];
+            Dictionary<string, string> displayParameters = ReadDisplayParameters();
+
+            if (parameters.ContainsKey(displayParameters["Pallet Length"])) txtPalletLen.Text = parameters[displayParameters["Pallet Length"]];
+            if (parameters.ContainsKey(displayParameters["Stop Position"])) txtStopPos.Text = parameters[displayParameters["Stop Position"]];
+            if (parameters.ContainsKey(displayParameters["Gap Size"])) txtGapSize.Text = parameters[displayParameters["Gap Size"]];
+            if (parameters.ContainsKey(displayParameters["Over/Under Travel Size"])) txtTravelSteps.Text = parameters[displayParameters["Over/Under Travel Size"]];
+            if (parameters.ContainsKey(displayParameters["Direction"])) CmbBoxDir.SelectedIndex = int.Parse(parameters[displayParameters["Direction"]]);
+            if (parameters.ContainsKey(displayParameters["Double Sided"])) CmbBoxDbSide.SelectedIndex = int.Parse(parameters[displayParameters["Double Sided"]]);
+            if (parameters.ContainsKey(displayParameters["Travel Correction"])) CmbBoxTravCorr.SelectedIndex = int.Parse(parameters[displayParameters["Travel Correction"]]);
+            if (parameters.ContainsKey(displayParameters["Motor Current"])) txtMotorCurrent.Text = parameters[displayParameters["Motor Current"]];
+            if (parameters.ContainsKey(displayParameters["Motor Run Speed"])) txtMotorSpeed.Text = parameters[displayParameters["Motor Run Speed"]];
+            if (parameters.ContainsKey(displayParameters["Over/Under Travel Speed"])) txtTravelSpeed.Text = parameters[displayParameters["Over/Under Travel Speed"]];
         }
+
         private Label statusLabel;
 
         private void ShowStatusLabel(string message)
