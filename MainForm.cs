@@ -80,6 +80,7 @@ namespace DriveyorUtility
         private HashSet<string> processedIDs = new HashSet<string>();
         private Queue<string> idQueue = new Queue<string>();
         private bool isProcessing = false;
+        private bool shouldDisplayParameters = true;
         private void MainForm_Load(object sender, EventArgs e)
         {
             comB_COM_Port.Items.AddRange(COM_Port_Detected);
@@ -223,11 +224,12 @@ namespace DriveyorUtility
                         await Task.Delay(500);
                         if (sp != null && sp.IsOpen)
                         {
+                            shouldDisplayParameters = true;
                             byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                             sp.Write(bytetosendla, 0, bytetosendla.Length);
                             System.Diagnostics.Debug.WriteLine("LA command sent.");
 
-                            MessageBox.Show("Please wait for onboard LED to stop blinking orange, red means need to set an address");
+                            MessageBox.Show("Please wait for onboard LED D5 to stop showing yellow. \nBlinking red means need to set an address.");
                         }
                         else
                         {
@@ -313,7 +315,8 @@ namespace DriveyorUtility
             if (!CheckSerialPortConnection())
                 return;
 
-            Rf();
+            shouldDisplayParameters = false;
+            panel12.Invalidate();
         }
         private void ClearComboBox()
         {
@@ -804,13 +807,24 @@ namespace DriveyorUtility
             if (!CheckSerialPortConnection())
                 return;
 
-            ClearData();
-            
-            // Send the LA command
-            byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
-            sp.Write(bytetosendla, 0, bytetosendla.Length);
-            System.Diagnostics.Debug.WriteLine("LA command sent.");
+            if (!shouldDisplayParameters)
+            {
+                // Enable the display of parameters
+                shouldDisplayParameters = true;
+                panel12.Invalidate(); // Refresh the panel to show parameters
+                System.Diagnostics.Debug.WriteLine("Parameter display enabled.");
+            }
+            else
+            {
+                ClearData();
+
+                // Send the LA command
+                byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
+                sp.Write(bytetosendla, 0, bytetosendla.Length);
+                System.Diagnostics.Debug.WriteLine("LA command sent.");
+            }
         }
+
         private void ListSpecParam_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
@@ -907,63 +921,66 @@ namespace DriveyorUtility
         //Output Of Data Handler Received
         private void panel12_Paint_1(object sender, PaintEventArgs e)
         {
-            var displayParameters = ReadDisplayParameters();
-
-            Graphics g = e.Graphics;
-            Font font = new Font("Arial", 12);
-            Brush brush = Brushes.Black;
-
-            float y = panel12.AutoScrollPosition.Y; // Initial vertical position with auto-scroll adjustment
-            float lineHeight = font.GetHeight(g); // Line height based on the font
-
-            // Draw parameters for each card in the dictionary
-            foreach (var kvp in cardParameters.OrderBy(k => k.Key))
+            if (shouldDisplayParameters)
             {
-                string id = kvp.Key;
-                ConveyorParameters conveyorParams = kvp.Value.conveyorParams;
-                MotorParameters motorParams = kvp.Value.motorParams;
+                var displayParameters = ReadDisplayParameters();
 
-                // Draw ID
-                g.DrawString($"ID: {id}", font, brush, new PointF(10, y));
-                y += lineHeight;
+                Graphics g = e.Graphics;
+                Font font = new Font("Arial", 12);
+                Brush brush = Brushes.Black;
 
-                // Draw Conveyor Parameters
-                if (conveyorParams != null)
+                float y = panel12.AutoScrollPosition.Y; // Initial vertical position with auto-scroll adjustment
+                float lineHeight = font.GetHeight(g); // Line height based on the font
+
+                // Draw parameters for each card in the dictionary
+                foreach (var kvp in cardParameters.OrderBy(k => k.Key))
                 {
-                    DrawParameter(g, font, brush, "Pallet Length", conveyorParams.PalletLength, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Stop Position", conveyorParams.StopPosition, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Gap Size", conveyorParams.GapSize, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Over/Under Travel Size", conveyorParams.TravelSize, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Timeout Steps", conveyorParams.TimeoutSteps, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Direction", conveyorParams.Direction, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Double Sided", conveyorParams.DoubleSided, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Travel Correction", conveyorParams.TravelCorrection, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "REV_INT", conveyorParams.RevInternal, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "REV_ext", conveyorParams.RevExternal, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "INH_ext", conveyorParams.InhExternal, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "INH_INT", conveyorParams.InhInternal, displayParameters, ref y, lineHeight);
+                    string id = kvp.Key;
+                    ConveyorParameters conveyorParams = kvp.Value.conveyorParams;
+                    MotorParameters motorParams = kvp.Value.motorParams;
+
+                    // Draw ID
+                    g.DrawString($"ID: {id}", font, brush, new PointF(10, y));
+                    y += lineHeight;
+
+                    // Draw Conveyor Parameters
+                    if (conveyorParams != null)
+                    {
+                        DrawParameter(g, font, brush, "Pallet Length", conveyorParams.PalletLength, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Stop Position", conveyorParams.StopPosition, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Gap Size", conveyorParams.GapSize, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Over/Under Travel Size", conveyorParams.TravelSize, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Timeout Steps", conveyorParams.TimeoutSteps, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Direction", conveyorParams.Direction, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Double Sided", conveyorParams.DoubleSided, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Travel Correction", conveyorParams.TravelCorrection, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "REV_INT", conveyorParams.RevInternal, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "REV_ext", conveyorParams.RevExternal, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "INH_ext", conveyorParams.InhExternal, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "INH_INT", conveyorParams.InhInternal, displayParameters, ref y, lineHeight);
+                    }
+
+                    // Draw Motor Parameters
+                    if (motorParams != null)
+                    {
+                        DrawParameter(g, font, brush, "Motor Current", motorParams.MC, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Hold Current", motorParams.MD, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Microstepping Size", motorParams.MI, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Run Speed", motorParams.MR, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Over/Under Travel Speed", motorParams.MJ, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Acceleration", motorParams.MA, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Direction", motorParams.MB, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Motor Speed Profile", motorParams.MF, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Mot OK", motorParams.MotOK, displayParameters, ref y, lineHeight);
+                        DrawParameter(g, font, brush, "Temperature", motorParams.Temperature, displayParameters, ref y, lineHeight);
+                    }
+
+                    y += lineHeight * 2; // Add extra space between cards
                 }
 
-                // Draw Motor Parameters
-                if (motorParams != null)
-                {
-                    DrawParameter(g, font, brush, "Motor Current", motorParams.MC, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Hold Current", motorParams.MD, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Microstepping Size", motorParams.MI, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Run Speed", motorParams.MR, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Over/Under Travel Speed", motorParams.MJ, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Acceleration", motorParams.MA, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Direction", motorParams.MB, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Motor Speed Profile", motorParams.MF, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Mot OK", motorParams.MotOK, displayParameters, ref y, lineHeight);
-                    DrawParameter(g, font, brush, "Temperature", motorParams.Temperature, displayParameters, ref y, lineHeight);
-                }
-
-                y += lineHeight * 2; // Add extra space between cards
+                // Adjust the AutoScrollMinSize based on the content height
+                panel12.AutoScrollMinSize = new Size(panel12.Width, (int)y - panel12.AutoScrollPosition.Y);
             }
-
-            // Adjust the AutoScrollMinSize based on the content height
-            panel12.AutoScrollMinSize = new Size(panel12.Width, (int)y - panel12.AutoScrollPosition.Y);
         }
 
         private void DrawParameter(Graphics g, Font font, Brush brush, string parameterName, object parameterValue, Dictionary<string, string> displayParameters, ref float y, float lineHeight)
@@ -984,7 +1001,7 @@ namespace DriveyorUtility
         {
             if (!CheckSerialPortConnection())
                 return;
-
+            
             // Get user input in messagebox, convert to hex then do the rest of the operation...
             string userInput = Microsoft.VisualBasic.Interaction.InputBox("Enter address ID:", "Input New Address ID", "0000");
             if (userInput == "0000")
@@ -1034,7 +1051,7 @@ namespace DriveyorUtility
                 // Clear data after sending all commands to ensure display is updated
                 Rf();
                 storedIDs.Clear();
-
+                shouldDisplayParameters = true;
                 byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                 sp.Write(bytetosendla, 0, bytetosendla.Length);
                 System.Diagnostics.Debug.WriteLine("LA command sent.");
@@ -1115,7 +1132,7 @@ namespace DriveyorUtility
 
             // Update the HashSet and Dictionary with the new address
             storedIDs.Add(formattedNewAddress);
-
+            shouldDisplayParameters = true;
             // Send the LA command for the new address
             SendLAForNewAddress(formattedNewAddress);
             PopulateComboBoxWithStoredIDs(); // Populate the ComboBox with sorted IDs
@@ -1204,7 +1221,7 @@ namespace DriveyorUtility
                     SendCommands(bytetosend);
                     Thread.Sleep(1000); // Add a 500 milliseconds delay between commands
                 }
-
+                shouldDisplayParameters = true;
                 ClearAllData();
                 ClearTextFields();
                 foreach (var item in cbBoxAddrID.Items)
@@ -1217,7 +1234,7 @@ namespace DriveyorUtility
                     Thread.Sleep(800); // Add a 500 milliseconds delay between commands
                 }
                 MessageBox.Show($"Parameters for all cards changed.");
-
+                
                 HideStatusLabel();
             }
         }
@@ -1291,6 +1308,7 @@ namespace DriveyorUtility
                     SendCommands(bytetosend);
                     Thread.Sleep(1000); // Add a 2000 milliseconds delay between commands
                 }
+                shouldDisplayParameters = true;
                 ClearAllData();
                 ClearTextFields();
 
@@ -1468,6 +1486,8 @@ namespace DriveyorUtility
             {
                 try
                 {
+                    ClearTextFields();
+                    ClearComboBox();
                     string filePath = openFileDialog.FileName;
                     string fileContent = File.ReadAllText(filePath);
                     PopulateFieldsFromText(fileContent);
@@ -1480,6 +1500,7 @@ namespace DriveyorUtility
         }
         private void PopulateFieldsFromText(string text)
         {
+           
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             string[] lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (string line in lines)
