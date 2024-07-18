@@ -817,7 +817,7 @@ namespace DriveyorUtility
             else
             {
                 ClearData();
-
+                cardParameters.Clear();
                 // Send the LA command
                 byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                 sp.Write(bytetosendla, 0, bytetosendla.Length);
@@ -991,6 +991,7 @@ namespace DriveyorUtility
         }
         private void ClearData()
         {
+            cardParameters.Clear();
             receivedDataList.Clear();
             dataBuffer.Clear();
             panel12.Invalidate(); // Trigger repaint to clear the display

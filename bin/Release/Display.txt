@@ -2,7 +2,7 @@
 # eg to change the display name to from Pallet Length to Pallet Len the ans is
 # Pallet Length: Pallet Len
 
-Pallet Length: Pallet Len
+Pallet Length: Pallet Length
 Stop Position: Stop Position
 Gap Size: Gap Size
 Over/Under Travel Size: Over/Under Travel Size
