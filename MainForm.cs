@@ -16,6 +16,7 @@ using System.Threading;
 using DriveyorUtility;
 using System.ComponentModel.DataAnnotations;
 using System.Collections;
+using Microsoft.VisualBasic;
 
 namespace DriveyorUtility
 {
@@ -817,7 +818,12 @@ namespace DriveyorUtility
             else
             {
                 ClearData();
+                receivedDataList.Clear();
+                dataBuffer.Clear();
                 cardParameters.Clear();
+                storedIDs.Clear();
+                idQueue.Clear();
+                processedIDs.Clear();
                 // Send the LA command
                 byte[] bytetosendla = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6C, 0x61, 0x0D, 0x0A, 0x06 };
                 sp.Write(bytetosendla, 0, bytetosendla.Length);
@@ -991,7 +997,7 @@ namespace DriveyorUtility
         }
         private void ClearData()
         {
-            cardParameters.Clear();
+            
             receivedDataList.Clear();
             dataBuffer.Clear();
             panel12.Invalidate(); // Trigger repaint to clear the display
@@ -1066,34 +1072,27 @@ namespace DriveyorUtility
         private void EditSpecAddrID_Click(object sender, EventArgs e)
         {
             if (!CheckSerialPortConnection())
+            {
                 return;
-
-            // Prompt the user for the current address ID
-            string currentAddress = Microsoft.VisualBasic.Interaction.InputBox("Enter the current address ID:", "Input Current Address ID", "0000");
+            }
+            string currentAddress = Interaction.InputBox("Enter the current address ID:", "Input Current Address ID", "0000");
             if (string.IsNullOrEmpty(currentAddress))
             {
                 MessageBox.Show("Invalid Current Address Input");
                 return;
             }
-
-            // Prompt the user for the new address ID
-            string newAddress = Microsoft.VisualBasic.Interaction.InputBox("Enter the new address ID:", "Input New Address ID", "0000");
+            string newAddress = Interaction.InputBox("Enter the new address ID:", "Input New Address ID", "0000");
             if (string.IsNullOrEmpty(newAddress))
             {
                 MessageBox.Show("Invalid New Address Input");
                 return;
             }
-
-            // Ensure both addresses are 4 digits
             string formattedCurrentAddress = currentAddress.PadLeft(4, '0');
             string formattedNewAddress = newAddress.PadLeft(4, '0');
-
-            // Clear data for the old address
             if (cardParameters.ContainsKey(formattedCurrentAddress))
             {
                 cardParameters.Remove(formattedCurrentAddress);
             }
-
             if (storedIDs.Contains(formattedCurrentAddress))
             {
                 storedIDs.Remove(formattedCurrentAddress);
@@ -1102,41 +1101,27 @@ namespace DriveyorUtility
             {
                 processedIDs.Remove(formattedCurrentAddress);
             }
-            
-            // Clear existing data
             ClearData();
-
-            // Send commands in sequence with proper formatting
-            // 1. Send currentAddress$sl{newAddress}\r\n
-            string fullCommand_sl = $"{formattedCurrentAddress}$sl{formattedNewAddress}\r\n";
-            byte[] bytetosend_sl = Encoding.ASCII.GetBytes(fullCommand_sl).Concat(new byte[] { 0x06 }).ToArray();
+            string fullCommand_sl = formattedCurrentAddress + "$sl" + formattedNewAddress + "\r\n";
+            byte[] bytetosend_sl = Encoding.ASCII.GetBytes(fullCommand_sl).Concat(new byte[1] { 6 }).ToArray();
             SendCommands(bytetosend_sl);
             Thread.Sleep(1000);
-
-            // 2. Send {currentAddress}$sf\r\n
-            string command_sf = $"{formattedCurrentAddress}$sf\r\n";
-            byte[] bytetosend_sf = Encoding.ASCII.GetBytes(command_sf).Concat(new byte[] { 0x06 }).ToArray();
+            string command_sf = formattedCurrentAddress + "$sf\r\n";
+            byte[] bytetosend_sf = Encoding.ASCII.GetBytes(command_sf).Concat(new byte[1] { 6 }).ToArray();
             SendCommands(bytetosend_sf);
             Thread.Sleep(1000);
-
-            // 3. Send {currentAddress}$se\r\n
-            string command_se = $"{formattedCurrentAddress}$se\r\n";
-            byte[] bytetosend_se = Encoding.ASCII.GetBytes(command_se).Concat(new byte[] { 0x06 }).ToArray();
+            string command_se = formattedCurrentAddress + "$se\r\n";
+            byte[] bytetosend_se = Encoding.ASCII.GetBytes(command_se).Concat(new byte[1] { 6 }).ToArray();
             SendCommands(bytetosend_se);
             Thread.Sleep(1000);
-
-            // Print the commands to the console
             Console.WriteLine("Commands sent:");
             Console.WriteLine(fullCommand_sl);
             Console.WriteLine(command_sf);
             Console.WriteLine(command_se);
-
-            // Update the HashSet and Dictionary with the new address
             storedIDs.Add(formattedNewAddress);
             shouldDisplayParameters = true;
-            // Send the LA command for the new address
             SendLAForNewAddress(formattedNewAddress);
-            PopulateComboBoxWithStoredIDs(); // Populate the ComboBox with sorted IDs
+            PopulateComboBoxWithStoredIDs();
         }
         private void SendLAForNewAddress(string address)
         {
