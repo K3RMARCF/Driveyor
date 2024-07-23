@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel10 = new System.Windows.Forms.Panel();
+            this.panel11 = new System.Windows.Forms.Panel();
             this.Refresh = new System.Windows.Forms.Button();
             this.lblMsg2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -72,6 +73,10 @@
             this.cbBoxAddrID = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.cBDnStrAddr = new System.Windows.Forms.ComboBox();
+            this.cBUpStrAddr = new System.Windows.Forms.ComboBox();
             this.MvRight = new System.Windows.Forms.Button();
             this.MvLeft = new System.Windows.Forms.Button();
             this.panel4 = new System.Windows.Forms.Panel();
@@ -86,7 +91,6 @@
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
             this.TestTimer = new System.Windows.Forms.Timer(this.components);
-            this.panel11 = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -131,16 +135,23 @@
             this.panel10.Size = new System.Drawing.Size(1344, 128);
             this.panel10.TabIndex = 1;
             // 
+            // panel11
+            // 
+            this.panel11.Location = new System.Drawing.Point(10, 10);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(106, 100);
+            this.panel11.TabIndex = 24;
+            // 
             // Refresh
             // 
             this.Refresh.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.Refresh.Font = new System.Drawing.Font("Berlin Sans FB", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Refresh.Location = new System.Drawing.Point(1050, 37);
+            this.Refresh.Location = new System.Drawing.Point(1052, 28);
             this.Refresh.Margin = new System.Windows.Forms.Padding(4, 2, 4, 2);
             this.Refresh.Name = "Refresh";
-            this.Refresh.Size = new System.Drawing.Size(152, 52);
+            this.Refresh.Size = new System.Drawing.Size(178, 70);
             this.Refresh.TabIndex = 23;
-            this.Refresh.Text = "Clear Data";
+            this.Refresh.Text = "Clear Display Data";
             this.Refresh.UseVisualStyleBackColor = true;
             this.Refresh.Click += new System.EventHandler(this.Refresh_Click);
             // 
@@ -588,6 +599,10 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.label15);
+            this.tabPage3.Controls.Add(this.label14);
+            this.tabPage3.Controls.Add(this.cBDnStrAddr);
+            this.tabPage3.Controls.Add(this.cBUpStrAddr);
             this.tabPage3.Controls.Add(this.MvRight);
             this.tabPage3.Controls.Add(this.MvLeft);
             this.tabPage3.Location = new System.Drawing.Point(4, 41);
@@ -598,9 +613,43 @@
             this.tabPage3.Text = "Test Mode";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(632, 176);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(285, 30);
+            this.label15.TabIndex = 5;
+            this.label15.Text = "DOWNSTREAM Address";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(141, 176);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(238, 30);
+            this.label14.TabIndex = 4;
+            this.label14.Text = "UPSTREAM Address";
+            // 
+            // cBDnStrAddr
+            // 
+            this.cBDnStrAddr.FormattingEnabled = true;
+            this.cBDnStrAddr.Location = new System.Drawing.Point(688, 219);
+            this.cBDnStrAddr.Name = "cBDnStrAddr";
+            this.cBDnStrAddr.Size = new System.Drawing.Size(180, 37);
+            this.cBDnStrAddr.TabIndex = 3;
+            // 
+            // cBUpStrAddr
+            // 
+            this.cBUpStrAddr.FormattingEnabled = true;
+            this.cBUpStrAddr.Location = new System.Drawing.Point(167, 219);
+            this.cBUpStrAddr.Name = "cBUpStrAddr";
+            this.cBUpStrAddr.Size = new System.Drawing.Size(180, 37);
+            this.cBUpStrAddr.TabIndex = 2;
+            // 
             // MvRight
             // 
-            this.MvRight.Location = new System.Drawing.Point(683, 198);
+            this.MvRight.Location = new System.Drawing.Point(688, 375);
             this.MvRight.Name = "MvRight";
             this.MvRight.Size = new System.Drawing.Size(181, 78);
             this.MvRight.TabIndex = 1;
@@ -610,7 +659,7 @@
             // 
             // MvLeft
             // 
-            this.MvLeft.Location = new System.Drawing.Point(165, 198);
+            this.MvLeft.Location = new System.Drawing.Point(166, 375);
             this.MvLeft.Name = "MvLeft";
             this.MvLeft.Size = new System.Drawing.Size(181, 78);
             this.MvLeft.TabIndex = 0;
@@ -765,13 +814,6 @@
             this.TestTimer.Interval = 10000;
             this.TestTimer.Tick += new System.EventHandler(this.TestTimer_Tick);
             // 
-            // panel11
-            // 
-            this.panel11.Location = new System.Drawing.Point(10, 10);
-            this.panel11.Name = "panel11";
-            this.panel11.Size = new System.Drawing.Size(106, 100);
-            this.panel11.TabIndex = 24;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -801,6 +843,7 @@
             this.panel7.ResumeLayout(false);
             this.panel7.PerformLayout();
             this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel8.ResumeLayout(false);
             this.panel8.PerformLayout();
@@ -868,6 +911,10 @@
         private System.Windows.Forms.Button MvLeft;
         private System.Windows.Forms.Timer TestTimer;
         private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox cBDnStrAddr;
+        private System.Windows.Forms.ComboBox cBUpStrAddr;
     }
 }
 

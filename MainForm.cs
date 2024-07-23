@@ -29,9 +29,6 @@ namespace DriveyorUtility
             InitializeComboBoxItems();
             LoadImageOnStartup();
         }
-        
-        
-
         private void InitializeComboBoxItems()
         {
             // Initialize Direction ComboBox
@@ -88,6 +85,7 @@ namespace DriveyorUtility
         }
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
+
             // Check if the selected tab is the "Parameters" tab
             if (tabControl1.SelectedTab == tabPage2)
             {
@@ -119,6 +117,10 @@ namespace DriveyorUtility
             {
                 // Clear previous dynamic controls if they exist
                 RemoveDynamicControls();
+            }
+            if (tabControl1.SelectedTab == tabPage3)
+            {
+                PopulateComboBoxWithStoredIDs();
             }
         }
         private void LoadImageOnStartup()
@@ -323,6 +325,10 @@ namespace DriveyorUtility
         {
             cbBoxAddrID.Items.Clear();
             cbBoxAddrID.Text = string.Empty; // Optionally clear the selected text
+            cBDnStrAddr.Items.Clear();
+            cBDnStrAddr.Text = string.Empty;
+            cBUpStrAddr.Items.Clear();
+            cBDnStrAddr.Text = string.Empty;
         }
         private bool CheckSerialPortConnection()
         {
@@ -442,6 +448,12 @@ namespace DriveyorUtility
                     }
                 }
             }
+
+            // Update the ComboBox on the UI thread
+            this.Invoke(new MethodInvoker(delegate
+            {
+                PopulateComboBoxWithStoredIDs();
+            }));
         }
 
         private void ProcessNextID()
@@ -1063,6 +1075,7 @@ namespace DriveyorUtility
                 sp.Write(bytetosendla, 0, bytetosendla.Length);
                 System.Diagnostics.Debug.WriteLine("LA command sent.");
 
+                
             }
             else
             {
@@ -1141,13 +1154,19 @@ namespace DriveyorUtility
         //Set Params
         private void PopulateComboBoxWithStoredIDs()
         {
-            cbBoxAddrID.Items.Clear();
-            //sort from ascending order
-            var sortedIDs = storedIDs.OrderBy(id => id).ToList();
-            //add all IDs in combobox
-            foreach (var id in sortedIDs)
+            ComboBox[] comboBoxes = { cbBoxAddrID, cbSelectID, cBUpStrAddr, cBDnStrAddr };
+            foreach (var comboBox in comboBoxes)
             {
-                cbBoxAddrID.Items.Add(id);
+                if (comboBox == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("A combo box is null.");
+                    continue; // Skip null combo boxes
+                }
+                comboBox.Items.Clear();
+                foreach (string id in storedIDs)
+                {
+                    comboBox.Items.Add(id);
+                }
             }
         }
         private void EditAllParam(object sender, EventArgs e)
