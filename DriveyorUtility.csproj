@@ -105,6 +105,7 @@
     <Compile Include="ParameterDisplayForm.Designer.cs">
       <DependentUpon>ParameterDisplayForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="PosParameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">

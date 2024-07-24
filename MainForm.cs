@@ -70,7 +70,8 @@ namespace DriveyorUtility
         SerialPort sp = null;
         private StringBuilder dataBuffer = new StringBuilder();
         private List<string> receivedDataList = new List<string>();
-        private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters)>();
+        private Dictionary<string, (ConveyorParameters conveyorParams, MotorParameters motorParams, PosParameters posParams)> cardParameters = new Dictionary<string, (ConveyorParameters, MotorParameters, PosParameters)>();
+
         private ComboBox cbSelectID;
         private bool isButtonClickProcessed = false;
         private HashSet<string> storedIDs = new HashSet<string>();
@@ -405,6 +406,7 @@ namespace DriveyorUtility
                 string id = ExtractID(completeMessage);
                 var conveyorParams = ExtractConveyorParameters(completeMessage);
                 var motorParams = ExtractMotorParameters(completeMessage);
+                var posParams = ExtractPosParameters(completeMessage);
 
                 if (!string.IsNullOrEmpty(id))
                 {
@@ -419,12 +421,12 @@ namespace DriveyorUtility
                     }
 
                     // Update parameters if valid
-                    if (conveyorParams != null || motorParams != null)
+                    if (conveyorParams != null || motorParams != null || posParams != null)
                     {
                         if (!cardParameters.ContainsKey(id))
                         {
                             // If the ID does not exist in the dictionary, add it with the new parameters
-                            cardParameters[id] = (conveyorParams, motorParams);
+                            cardParameters[id] = (conveyorParams, motorParams, posParams);
                         }
                         else
                         {
@@ -433,12 +435,37 @@ namespace DriveyorUtility
 
                             var updatedConveyorParams = UpdateConveyorParameters(existingParams.conveyorParams, conveyorParams);
                             var updatedMotorParams = UpdateMotorParameters(existingParams.motorParams, motorParams);
+                            var updatedPosParams = UpdatePosParameters(existingParams.posParams, posParams);
 
-                            cardParameters[id] = (updatedConveyorParams, updatedMotorParams);
+                            cardParameters[id] = (updatedConveyorParams, updatedMotorParams, updatedPosParams);
                         }
 
                         // Invalidate the panel to trigger a repaint
                         this.Invoke(new MethodInvoker(delegate { panel12.Invalidate(); }));
+                    }
+
+                    // Check if POS=1 and OBJ=1 for disabling the MoveRight button
+                    if (posParams != null && posParams.POS == 1 && posParams.OBJ == 1)
+                    {
+                        // Check if the ID is the same as the DownStrTimer tag
+                        if (id == DownStrTimer.Tag as string)
+                        {
+                            DownStrTimer.Stop();
+                            StopAllMotor();
+                            Thread.Sleep(1500);
+                            this.Invoke(new MethodInvoker(delegate { MvLeft.Enabled = true; }));
+                            System.Diagnostics.Debug.WriteLine($"Move Right button disabled for ID: {id}");
+                        }
+
+                        // Check if the ID is the same as the UpStrTimer tag
+                        if (id == UpStrTimer.Tag as string)
+                        {
+                            UpStrTimer.Stop();
+                            StopAllMotor();
+                            Thread.Sleep(1500);
+                            this.Invoke(new MethodInvoker(delegate { MvRight.Enabled = true; }));
+                            System.Diagnostics.Debug.WriteLine($"Move Left button disabled for ID: {id}");
+                        }
                     }
 
                     // Start processing the queue if not already processing
@@ -455,7 +482,11 @@ namespace DriveyorUtility
                 PopulateComboBoxWithStoredIDs();
             }));
         }
-
+        private void StopAllMotor()
+        {
+            byte[] bytetosend1 = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x6D, 0x73, 0x0D, 0x0A, 0x06 };
+            sp.Write(bytetosend1, 0, bytetosend1.Length);
+        }
         private void ProcessNextID()
         {
             if (idQueue.Count > 0)
@@ -1154,21 +1185,42 @@ namespace DriveyorUtility
         //Set Params
         private void PopulateComboBoxWithStoredIDs()
         {
-            ComboBox[] comboBoxes = { cbBoxAddrID, cbSelectID, cBUpStrAddr, cBDnStrAddr };
+            ComboBox[] comboBoxes;
+
+            // Check if cbSelectID is initialized
+            if (cbSelectID != null)
+            {
+                comboBoxes = new ComboBox[] { cbBoxAddrID, cBUpStrAddr, cBDnStrAddr, cbSelectID };
+            }
+            else
+            {
+                comboBoxes = new ComboBox[] { cbBoxAddrID, cBUpStrAddr, cBDnStrAddr };
+            }
+
             foreach (var comboBox in comboBoxes)
             {
-                if (comboBox == null)
-                {
-                    System.Diagnostics.Debug.WriteLine("A combo box is null.");
-                    continue; // Skip null combo boxes
-                }
+                System.Diagnostics.Debug.WriteLine($"Populating ComboBox: {comboBox.Name}");
+
+                // Store the currently selected item
+                var selectedItem = comboBox.SelectedItem;
+
                 comboBox.Items.Clear();
                 foreach (string id in storedIDs)
                 {
                     comboBox.Items.Add(id);
                 }
+
+                // Reselect the previously selected item if it exists in the new list
+                if (selectedItem != null && comboBox.Items.Contains(selectedItem))
+                {
+                    comboBox.SelectedItem = selectedItem;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"ComboBox {comboBox.Name} populated with {comboBox.Items.Count} items.");
             }
         }
+
+
         private void EditAllParam(object sender, EventArgs e)
         {
             if (!isButtonClickProcessed)
@@ -1570,30 +1622,127 @@ namespace DriveyorUtility
             byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x63, 0x64, 0x31, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosend, 0, bytetosend.Length);
 
-            DisableButtons();
+            if (cBUpStrAddr.SelectedItem != null)
+            {
+                string selectedID = cBUpStrAddr.SelectedItem.ToString();
+                UpStrTimer.Tag = selectedID; // Store the selected ID in the timer's Tag property
+                UpStrTimer.Start();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Upstream address is not selected.");
+            }
         }
+
         private void MvRight_Click(object sender, EventArgs e)
         {
             byte[] bytetosend = { 0x30, 0x30, 0x30, 0x30, 0x24, 0x63, 0x64, 0x30, 0x0D, 0x0A, 0x06 };
             sp.Write(bytetosend, 0, bytetosend.Length);
 
-            DisableButtons();
+            if (cBDnStrAddr.SelectedItem != null)
+            {
+                string selectedID = cBDnStrAddr.SelectedItem.ToString();
+                DownStrTimer.Tag = selectedID; // Store the selected ID in the timer's Tag property
+                DownStrTimer.Start();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Downstream address is not selected.");
+            }
+        }
+        private PosParameters ExtractPosParameters(string message)
+        {
+            try
+            {
+                PosParameters parameters = new PosParameters();
+                string[] lines = message.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                System.Diagnostics.Debug.WriteLine("Extracting Positional Parameters:");
+                foreach (string line in lines)
+                {
+                    if (line.Contains(","))
+                    {
+                        string[] keyValues = line.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                        foreach (string keyValue in keyValues)
+                        {
+                            string[] parts = keyValue.Split(new[] { '=' }, 2);
+                            if (parts.Length != 2) continue;
+
+                            string key = parts[0].Trim();
+                            string value = parts[1].Trim();
+
+                            switch (key)
+                            {
+                                case "POS":
+                                    parameters.POS = int.Parse(value);
+                                    break;
+                                case "OBJ":
+                                    parameters.OBJ = int.Parse(value);
+                                    break;
+                                // Add other parameters as needed
+                                default:
+                                    System.Diagnostics.Debug.WriteLine($"Unknown key: {key}");
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Extracted Positional Parameters: {parameters}");
+                return parameters;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error extracting positional parameters: {ex.Message}");
+                return null;
+            }
+        }
+        private PosParameters UpdatePosParameters(PosParameters current, PosParameters update)
+        {
+            if (current == null) current = new PosParameters();
+
+            if (update != null)
+            {
+                if (update.POS != 0) current.POS = update.POS;
+                if (update.OBJ != 0) current.OBJ = update.OBJ;
+                if (update.ERR != 0) current.ERR = update.ERR;
+                if (update.SEN1 != 0) current.SEN1 = update.SEN1;
+                if (update.SEN3 != 0) current.SEN3 = update.SEN3;
+                if (update.DROPPED_IN != 0) current.DROPPED_IN = update.DROPPED_IN;
+                if (update.MOVED_IN != 0) current.MOVED_IN = update.MOVED_IN;
+                if (update.OBJ_LEN != 0) current.OBJ_LEN = update.OBJ_LEN;
+                if (update.STOP != 0) current.STOP = update.STOP;
+            }
+
+            return current;
         }
 
-        private void TestTimer_Tick(object sender, EventArgs e)
+        private void DownStrTimer_Tick(object sender, EventArgs e)
         {
-            // Re-enable the buttons and stop the timer
-            MvLeft.Enabled = true;
-            MvRight.Enabled = true;
-            TestTimer.Stop();
+            string selectedID = DownStrTimer.Tag as string;
+            if (!string.IsNullOrEmpty(selectedID))
+            {
+                MvRight.Enabled = false;
+                MvLeft.Enabled = false;
+                string lcCommand = $"{selectedID}$lc\r\n";
+                byte[] bytetosend = Encoding.ASCII.GetBytes(lcCommand).Concat(new byte[] { 0x06 }).ToArray();
+                sp.Write(bytetosend, 0, bytetosend.Length);
+                System.Diagnostics.Debug.WriteLine($"LC command sent to {selectedID}");
+            }
         }
-        private void DisableButtons()
+
+        private void UpStrTimer_Tick(object sender, EventArgs e)
         {
-            MvLeft.Enabled = false;
-            MvRight.Enabled = false;
-            TestTimer.Start();
+            string selectedID = UpStrTimer.Tag as string;
+            if (!string.IsNullOrEmpty(selectedID))
+            {
+                MvRight.Enabled = false;
+                MvLeft.Enabled = false;
+                string lcCommand = $"{selectedID}$lc\r\n";
+                byte[] bytetosend = Encoding.ASCII.GetBytes(lcCommand).Concat(new byte[] { 0x06 }).ToArray();
+                sp.Write(bytetosend, 0, bytetosend.Length);
+                System.Diagnostics.Debug.WriteLine($"LC command sent to {selectedID}");
+            }
         }
-        
     }
 }
 

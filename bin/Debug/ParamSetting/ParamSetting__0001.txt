@@ -1,0 +1,23 @@
+ID: 0001
+Pallet Length: 3000
+Stop Position: 350
+Gap Size: 100
+Over/Under Travel Size: 400
+Timeout Steps: 12000
+Direction: 1
+Double Sided: 0
+Travel Correction: 1
+Rev External: 0
+Rev Internal: 0
+Inh External: 0
+Inh Internal: 0
+Motor Current: 10
+Motor Hold Current: 1
+Motor Micro Size: 0
+Motor Speed: 600
+Over/Under Travel Speed: 150
+Motor Acceleration: 2425
+Motor Direction: 0
+Motor Speed Profile: 2
+Motor Status: OK
+Temperature: 20

@@ -90,7 +90,8 @@
             this.panel9 = new System.Windows.Forms.Panel();
             this.confirmButtonTimer = new System.Windows.Forms.Timer(this.components);
             this.panel2 = new System.Windows.Forms.Panel();
-            this.TestTimer = new System.Windows.Forms.Timer(this.components);
+            this.DownStrTimer = new System.Windows.Forms.Timer(this.components);
+            this.UpStrTimer = new System.Windows.Forms.Timer(this.components);
             this.panel1.SuspendLayout();
             this.panel10.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -809,10 +810,15 @@
             this.panel2.Size = new System.Drawing.Size(1348, 65);
             this.panel2.TabIndex = 0;
             // 
-            // TestTimer
+            // DownStrTimer
             // 
-            this.TestTimer.Interval = 10000;
-            this.TestTimer.Tick += new System.EventHandler(this.TestTimer_Tick);
+            this.DownStrTimer.Interval = 200;
+            this.DownStrTimer.Tick += new System.EventHandler(this.DownStrTimer_Tick);
+            // 
+            // UpStrTimer
+            // 
+            this.UpStrTimer.Interval = 200;
+            this.UpStrTimer.Tick += new System.EventHandler(this.UpStrTimer_Tick);
             // 
             // MainForm
             // 
@@ -909,12 +915,13 @@
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button MvRight;
         private System.Windows.Forms.Button MvLeft;
-        private System.Windows.Forms.Timer TestTimer;
         private System.Windows.Forms.Panel panel11;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox cBDnStrAddr;
         private System.Windows.Forms.ComboBox cBUpStrAddr;
+        private System.Windows.Forms.Timer DownStrTimer;
+        private System.Windows.Forms.Timer UpStrTimer;
     }
 }
 
